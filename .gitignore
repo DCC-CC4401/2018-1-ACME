@@ -169,3 +169,5 @@ fabric.properties
 .idea/httpRequests
 
 .idea/
+Inventario/migrations/0001_initial.py
+customAuth/migrations/0001_initial.py

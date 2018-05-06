@@ -1,15 +1,31 @@
+# Create your views here.
+from django.http import HttpResponse
 from django.shortcuts import render
 
-# Create your views here.
+
+def index(request):
+    return HttpResponse("Hello World")
+
 
 def landingPageUsuario(request):
-    return HttpResponse("hola")
+    context = {}
+    return render(request, 'Inventario/landingPageUsuario.html', context)
+
 
 def landingPageAdministrador(request):
-    pass
+    context = {}
+    return render(request, 'Inventario/landingPageAdministrador.html', context)
 
-def registerPage(request):
-    pass
+
+def paginaRegistro(request):
+    context = {}
+    return render(request, 'Inventario/registro.html', context)
+
+
+def perfilUsuario(request, userId):
+    context = {}
+    return render(request, 'Inventario/perfilUsuario.html', context)
+
 
 def iniciarSesion(request):
     pass
