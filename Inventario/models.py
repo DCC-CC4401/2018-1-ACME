@@ -6,8 +6,7 @@ from django.db import models
 
 class Usuario(models.Model):
     nombre = models.CharField(max_length=50)
-    rut = models.PositiveIntegerField
-    digitoVerificador = models.PositiveIntegerField
+    rut = models.CharField(max_length=10)
     correo = models.EmailField(max_length=60)
     password = models.CharField(max_length=200)
     esAdmin = models.BooleanField
