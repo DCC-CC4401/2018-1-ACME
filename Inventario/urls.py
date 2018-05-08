@@ -2,8 +2,10 @@ from django.urls import path
 
 from . import views
 
+app_name = 'Inventario'
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('usuario/<int:userId>/', views.perfilUsuario, name='perfilUsuario'),
-    path('administrador/', views.landingPageAdministrador, name='perfilAdmin')
+    path('registrar', views.registrar, name='registrar'),
 ]

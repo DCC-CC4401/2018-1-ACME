@@ -119,5 +119,5 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'customAuth.CustomUser'
 AUTHENTICATION_BACKENDS = ('customAuth.backend.CustomBackend',)
 
-LOGIN_REDIRECT_URL = 'index'
-LOGOUT_REDIRECT_URL = 'index'
+LOGIN_REDIRECT_URL = 'Inventario:index'
+LOGOUT_REDIRECT_URL = 'Inventario:index'

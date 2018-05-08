@@ -1,15 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 # Create your models here.
-
-class Usuario(models.Model):
-    nombre = models.CharField(max_length=50)
-    rut = models.CharField(max_length=10)
-    correo = models.EmailField(max_length=60)
-    password = models.CharField(max_length=200)
-    esAdmin = models.BooleanField
+from customAuth.models import CustomUser
 
 
 class Reserva(models.Model):
@@ -17,7 +10,7 @@ class Reserva(models.Model):
     nombre = models.CharField(max_length=100)
     horaInicio = models.TimeField
     horaTermino = models.TimeField
-    solicitante = Usuario
+    solicitante = CustomUser
     fechaReserva = models.DateField
     fechaCreacion = models.DateTimeField
 
@@ -27,7 +20,7 @@ class Prestamo(models.Model):
     nombre = models.CharField(max_length=100)
     horaInicio = models.TimeField
     horaTermino = models.TimeField
-    solicitante = Usuario
+    solicitante = CustomUser
     fechaPrestamo = models.DateField
     estado = (('V', 'Vigente'), ('P', 'Perdido'), ('C', 'Caducado'))
 

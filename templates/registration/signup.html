@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form action="{% url 'Inventario:registrar' %}" method="post">
+        {% csrf_token %}
+        {{ form.errors }}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <br>
+        <input type="submit" value="Enviar">
+    </form>
+    <br>
+    <form action="{% url 'Inventario:index' %}">
+        <input type="submit" value="Volver">
+    </form>
+{% endblock %}
