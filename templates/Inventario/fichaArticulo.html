@@ -18,22 +18,9 @@
     <hr>
 
     <div>
-    <h4>Solicitar Reserva</h4>
-    <canvas id="myCanvas" width="300" height="200" style="border:1px solid #000000;"></canvas>
-
-    <script>
-
-    var c = document.getElementById("myCanvas");
-    var ctx = c.getContext("2d");
-
-    ctx.font = "15px Arial";
-    ctx.textAlign = "start";
-    ctx.fillText("Fecha:",20, 20);
-
-    ctx.fillText("Hora:",20, 50);
-
-    </script>
+        <h4>Solicitar Reserva</h4>
+        <canvas id="myCanvas" width="300" height="200" style="border:1px solid #000000;"></canvas>
 
     </div>
-
+    <script type="text/javascript" src="{% static 'Inventario/js/fichaArticulo.js' %}"></script>
 {% endblock %}

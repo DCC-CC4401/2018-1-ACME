@@ -6,7 +6,34 @@
 {% endblock %}
 
 {% block content %}
-
-    Perfil de Usuario
-
+    <h1>Perfil de Usuario</h1>
+    <h4>Reservas</h4>
+    {% if reservas %}
+        <table>
+            {% for reserva in reservas %}
+                <tr>
+                    <td>{{ reserva.nombreItem }}</td>
+                    <td>{{ reserva.horaInicio }}</td>
+                    <td>{{ reserva.horaTermino }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No se encontraron reservas.</p>
+    {% endif %}
+    <h4>Préstamos</h4>
+    {% if prestamos %}
+        <table>
+            {% for prestamo in prestamos %}
+                <tr>
+                    <td>{{ prestamo.nombreItem }}</td>
+                    <td>{{ prestamo.horaInicio }}</td>
+                    <td>{{ prestamo.horaTermino }}</td>
+                    <td>{{ prestamo.estado }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No se encontraron prestamos.</p>
+    {% endif %}
 {% endblock %}
