@@ -30,6 +30,11 @@ def perfilUsuario(request, userId):
     return render(request, 'Inventario/perfilUsuario.html', context)
 
 
+def fichaArticulo(request, articuloId):
+    context = {}
+    return render(request, 'Inventario/fichaArticulo.html', context)
+
+
 def registrar(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('Inventario:index'))
@@ -40,3 +45,5 @@ def registrar(request):
             return HttpResponseRedirect(reverse('Inventario:index'))
     form = RegistrationForm()
     return render(request, 'registration/signup.html', {'form': form})
+
+

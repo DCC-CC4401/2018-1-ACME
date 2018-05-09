@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Ficha Artículo
+{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'Inventario/css/fichaArticulo.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="header">
+        <img src="http://www.cei.cl/wp-content/uploads/2014/12/Logo-Cei.png" style="width:142px;height:142px;">
+    </div>
+    <div class="relative"><h3>Ficha Artículo</h3></div>
+    <hr>
+
+    <div>
+    <h4>Solicitar Reserva</h4>
+    <canvas id="myCanvas" width="300" height="200" style="border:1px solid #000000;"></canvas>
+
+    <script>
+
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+
+    ctx.font = "15px Arial";
+    ctx.textAlign = "start";
+    ctx.fillText("Fecha:",20, 20);
+
+    ctx.fillText("Hora:",20, 50);
+
+    </script>
+
+    </div>
+
+{% endblock %}
