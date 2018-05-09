@@ -3,7 +3,6 @@ import django
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
 from customAuth.forms import RegistrationForm
 
 
@@ -15,7 +14,6 @@ def index(request):
             return landingPageUsuario(request)
     else:
         return django.contrib.auth.views.login(request)
-
 
 def landingPageUsuario(request):
     context = {}

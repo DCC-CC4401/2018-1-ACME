@@ -6,28 +6,25 @@ from customAuth.models import CustomUser
 
 
 class Reserva(models.Model):
-    id = models.PositiveIntegerField
-    nombre = models.CharField(max_length=100)
+    nombreItem = models.CharField(max_length=100)
     horaInicio = models.TimeField
     horaTermino = models.TimeField
-    solicitante = CustomUser
+    solicitante = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     fechaReserva = models.DateField
     fechaCreacion = models.DateTimeField
 
 
 class Prestamo(models.Model):
-    id = models.PositiveIntegerField
-    nombre = models.CharField(max_length=100)
+    nombreItem = models.CharField(max_length=100)
     horaInicio = models.TimeField
     horaTermino = models.TimeField
-    solicitante = CustomUser
+    solicitante = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     fechaPrestamo = models.DateField
     estado = (('V', 'Vigente'), ('P', 'Perdido'), ('C', 'Caducado'))
 
 
 class Articulo(models.Model):
     nombre = models.CharField(max_length=50)
-    nameId = models.CharField(max_length=100)
     estado = (('D', 'Disponible'), ('P', 'En prestamo'), ('R', 'En reparacion'), ('P', 'Perdido'))
     descripcion = models.CharField(max_length=500)
     foto = models.ImageField
@@ -35,7 +32,6 @@ class Articulo(models.Model):
 
 class Espacio(models.Model):
     nombre = models.CharField(max_length=50)
-    nameId = models.CharField(max_length=100)
     estado = (('D', 'Disponible'), ('P', 'En prestamo'), ('R', 'En reparacion'))
     descripcion = models.CharField(max_length=500)
     foto = models.ImageField
