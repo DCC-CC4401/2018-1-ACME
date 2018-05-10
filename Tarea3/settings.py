@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Inventario.apps.InventarioConfig',
     'customAuth',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

@@ -1,31 +1,31 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 
 {% block content %}
-    {% if form.errors %}
-        <p><b>RUT, email y/o contraseña incorrecta</b></p>
-    {% endif %}
+    <div class="container">
+        <form method="post" action="{% url 'customAuth:login' %}">
+            {% csrf_token %}
 
-    <form method="post" action="{% url 'login' %}">
-        {% csrf_token %}
-        <div>
-            <table>
-                <tr>
-                    <td>RUT o email</td>
-                    <td>{{ form.username }}</td>
-                </tr>
-                <tr>
-                    <td>Contraseña</td>
-                    <td>{{ form.password }}</td>
-                </tr>
-            </table>
-        </div>
+            {% for hidden_field in form.hidden_fields %}
+                {{ hidden_field }}
+            {% endfor %}
+
+            {% for field in form.visible_fields %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {% render_field field class="form-control" %}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary">Acceder</button>
+        </form>
         <br>
-        <div>
-            <input type="submit" value="Iniciar Sesión"/>
-        </div>
-    </form>
-    <br>
-    <form action="{% url 'Inventario:registrar' %}">
-        <input type="submit" value="Registrar">
-    </form>
+        <form action="{% url 'customAuth:registrar' %}">
+            <button type="submit" class="btn btn-secondary">Registrar</button>
+        </form>
+    </div>
+
 {% endblock %}
