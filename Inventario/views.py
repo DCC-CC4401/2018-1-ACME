@@ -22,7 +22,12 @@ def landingPageUsuario(request):
 
 
 def landingPageAdministrador(request):
-    context = {}
+    reservas = Reserva.objects.order_by('-fechaReserva')
+    prestamos = Prestamo.objects.order_by('-fechaPrestamo')
+    context = {
+        'reservas': reservas,
+        'prestamos': prestamos
+    }
     return render(request, 'Inventario/landingPageAdministrador.html', context)
 
 
