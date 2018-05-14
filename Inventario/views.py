@@ -2,6 +2,7 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from datetime import datetime, timedelta, date
 
 from Inventario.models import Reserva, Prestamo
 
@@ -24,9 +25,15 @@ def landingPageUsuario(request):
 def landingPageAdministrador(request):
     reservas = Reserva.objects.order_by('-fechaReserva')
     prestamos = Prestamo.objects.order_by('-fechaPrestamo')
+    lunes = (date.today() - timedelta(date.today().isoweekday()-1))
+    domingo = (date.today() + timedelta(7-date.today().isoweekday()))
+    reservagrilla = Reserva.objects.filter(fechaReserva__range=[lunes,domingo])
     context = {
         'reservas': reservas,
-        'prestamos': prestamos
+        'prestamos': prestamos,
+        'lunes': lunes,
+        'domingo': domingo,
+        'reservagrilla': reservagrilla
     }
     return render(request, 'Inventario/landingPageAdministrador.html', context)
 
