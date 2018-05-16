@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from datetime import datetime, timedelta, date
 
-from Inventario.models import Reserva, Prestamo
+from Inventario.models import Reserva, Prestamo, Articulo
 
 
 def index(request):
@@ -51,5 +51,21 @@ def perfilUsuario(request):
 
 
 def fichaArticulo(request, articuloId):
-    context = {}
+    reservas = Reserva.objects.order_by('-fechaReserva')
+    articulo = Articulo.objects
+
+    context = {
+        'reservas': reservas,
+        'articulo': articulo,
+    }
     return render(request, 'Inventario/fichaArticulo.html', context)
+
+def upload_img(request):
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            m = Articulo.objects.get(pk=course_id)
+            m.foto = form.cleaned_data['image']
+            m.save()
+            return HttpResponse('image upload success')
+    return HttpResponseForbidden('allowed only via POST')

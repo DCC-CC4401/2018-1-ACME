@@ -20,4 +20,7 @@ urlpatterns = [
     path('', include('Inventario.urls', namespace='Inventario')),
     path('admin/', admin.site.urls),
     path('cuentas/', include('customAuth.urls')),
+    path('lpadministrador/', include('Inventario.urls', namespace='Inventarioadmin'))
+
+
 ]

@@ -36,7 +36,7 @@ class Articulo(models.Model):
     nombre = models.CharField(max_length=50)
     estado = (('D', 'Disponible'), ('P', 'En prestamo'), ('R', 'En reparacion'), ('P', 'Perdido'))
     descripcion = models.CharField(max_length=500)
-    foto = models.ImageField(null=True)
+    foto = models.ImageField(upload_to='static/imgarticulo/', default='imgarticulo/None/no-img.jpg')
 
 
 class Espacio(models.Model):
