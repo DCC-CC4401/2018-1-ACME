@@ -4,6 +4,7 @@
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'Inventario/css/toggle.css' %}">
+
 {% endblock %}
 
 {% block content %}
@@ -19,17 +20,21 @@
                 <label for="{{ form.username.id_for_label }}"
                        class="col-2 col-form-label">{{ form.username.label }}:</label>
                 {% render_field form.username class="form-control col-3" %}
-            </div>
-            <div class="form-group row">
                 <label for="{{ form.email.id_for_label }}" class="col-2 col-form-label">{{ form.email.label }}:</label>
                 {% render_field form.email class="form-control col-3" %}
+            </div>
+            <div class="form-group row">
+                <label for="{{ form.nombre.id_for_label }}"
+                       class="col-2 col-form-label">{{ form.nombre.label }}:</label>
+                {% render_field form.nombre class="form-control col-3" %}
+                <label for="{{ form.apellido.id_for_label }}"
+                       class="col-2 col-form-label">{{ form.apellido.label }}:</label>
+                {% render_field form.apellido class="form-control col-3" %}
             </div>
             <div class="form-group row">
                 <label for="{{ form.password.id_for_label }}"
                        class="col-2 col-form-label">{{ form.password.label }}:</label>
                 {% render_field form.password class="form-control col-3" %}
-            </div>
-            <div class="form-group row">
                 <label for="{{ form.esAdmin.id_for_label }}"
                        class="col-2 col-form-label form-check-label">{{ form.esAdmin.label }}:</label>
                 <label class="switch">
@@ -37,13 +42,11 @@
                     <span class="slider round"></span>
                 </label>
             </div>
-            <button type="submit" class="btn btn-primary">Acceder</button>
+            <button type="submit" class="btn btn-primary">Registrar</button>
         </form>
         <br>
         <form action="{% url 'Inventario:index' %}">
             <button type="submit" class="btn btn-secondary">Volver</button>
         </form>
     </div>
-    <style>
-    </style>
 {% endblock %}
