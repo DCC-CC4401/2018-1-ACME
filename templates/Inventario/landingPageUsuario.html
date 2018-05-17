@@ -5,8 +5,23 @@
     Landing Page Usuario
 {% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'Inventario/css/lpusuario.css' %}">
+{% endblock %}
+
 {% block content %}
 
-    Landing Page de Usuario
+    <div class="btn-group" style="width:100%">
+        <button style="width:50%">Artículos</button>
+        <button style="width:50%">Espacios</button>
+    </div>
+
+    <form action="url/buscador/" method="GET">
+        {% csrf_token %}
+        <div class="search">
+            <input name="q" type="text" class="searchTerm" placeholder="Busca un artículo">
+            <button type="submit" class="searchButton">Buscar</button>
+        </div>
+    </form>
 
 {% endblock %}

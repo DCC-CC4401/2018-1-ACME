@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from datetime import datetime, timedelta, date
 
-from Inventario.models import Reserva, Prestamo, Articulo
+from Inventario.models import Reserva, Prestamo, Articulo, Espacio
 
 
 def index(request):
@@ -17,8 +17,21 @@ def index(request):
         return HttpResponseRedirect(reverse('customAuth:login'))
 
 
+def busquedaArticulos(request):
+    q = request.GET.get('q', '')
+    articulo = Articulo.objects.filter(nombre__icontains=q)
+    return render(request, 'Inventario/landingPageUsuario.html', {'articulo': articulo})
+
+
 def landingPageUsuario(request):
-    context = {}
+    articulos = Articulo.objects
+    espacios = Espacio.objects
+    reservas = Reserva.objects
+    context = {
+        'articulos': articulos,
+        'espacios': espacios,
+        'reservas': reservas,
+    }
     return render(request, 'Inventario/landingPageUsuario.html', context)
 
 
