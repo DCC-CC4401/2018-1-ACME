@@ -18,42 +18,42 @@
     <hr>
 
 
-<form action="{% url upload_img %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-    <p>
-        <input id="id_image" type="file" class="" name="image">
-    </p>
-    <input type="submit" value="Submit" />
-</form>
+    <form action="{% url 'upload_img' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <p>
+            <input id="id_image" type="file" class="" name="image">
+        </p>
+        <input type="submit" value="Submit"/>
+    </form>
 
     <div>
-    <h4>Solicitar Reserva</h4>
-    <canvas id="myCanvas" width="300" height="200" style="border:1px solid #000000;"></canvas>
+        <h4>Solicitar Reserva</h4>
+        <canvas id="myCanvas" width="300" height="200" style="border:1px solid #000000;"></canvas>
 
-    <script>
+        <script>
 
-    var c = document.getElementById("myCanvas");
-    var ctx = c.getContext("2d");
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
 
-    ctx.font = "15px Arial";
-    ctx.textAlign = "start";
-    ctx.fillText("Fecha:",20, 20);
+            ctx.font = "15px Arial";
+            ctx.textAlign = "start";
+            ctx.fillText("Fecha:", 20, 20);
 
-    ctx.fillText("Hora:",20, 50);
+            ctx.fillText("Hora:", 20, 50);
 
-    </script>
+        </script>
 
     </div>
 
 
     <div>
-     <h3>Historial Reservas</h3>
+        <h3>Historial Reservas</h3>
         {% if reservas %}
             <ul style="list-style-type:disc">
-              <li>{{ reservas.fechaCreacion }}  {{ reserva.horaInicio }} a {{ reserva.horaTermino }}</li>
+                <li>{{ reservas.fechaCreacion }} {{ reserva.horaInicio }} a {{ reserva.horaTermino }}</li>
             </ul>
         {% else %}
             <p>No se encontraron reservas.</p>
-         {% endif %}
+        {% endif %}
 
     </div>
 

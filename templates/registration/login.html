@@ -2,8 +2,9 @@
 {% load widget_tweaks %}
 
 {% block content %}
-    <div class="container">
-        <form method="post" action="{% url 'customAuth:login' %}">
+
+    <div class="row justify-content-center align-items-center">
+        <form class="col-6" method="post" action="{% url 'customAuth:login' %}">
             {% csrf_token %}
 
             {% for hidden_field in form.hidden_fields %}
@@ -19,11 +20,11 @@
                     {% endif %}
                 </div>
             {% endfor %}
-
             <button type="submit" class="btn btn-primary">Acceder</button>
         </form>
-        <br>
-        <form action="{% url 'customAuth:registrar' %}">
+    </div>
+    <div class="row justify-content-center align-items-center" style="padding-top:20px">
+        <form class="col-6" action="{% url 'customAuth:registrar' %}">
             <button type="submit" class="btn btn-secondary">Registrar</button>
         </form>
     </div>

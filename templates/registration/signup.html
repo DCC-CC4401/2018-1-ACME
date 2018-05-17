@@ -8,8 +8,9 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <form action="{% url 'customAuth:registrar' %}" method="post">
+
+    <div class="row justify-content-center align-items-center">
+        <form class="col-10" action="{% url 'customAuth:registrar' %}" method="post">
             {% csrf_token %}
 
             {% for hidden_field in form.hidden_fields %}
@@ -19,22 +20,22 @@
             <div class="form-group row">
                 <label for="{{ form.username.id_for_label }}"
                        class="col-2 col-form-label">{{ form.username.label }}:</label>
-                {% render_field form.username class="form-control col-3" %}
+                {% render_field form.username class="form-control col-4" %}
                 <label for="{{ form.email.id_for_label }}" class="col-2 col-form-label">{{ form.email.label }}:</label>
-                {% render_field form.email class="form-control col-3" %}
+                {% render_field form.email class="form-control col-4" %}
             </div>
             <div class="form-group row">
                 <label for="{{ form.nombre.id_for_label }}"
                        class="col-2 col-form-label">{{ form.nombre.label }}:</label>
-                {% render_field form.nombre class="form-control col-3" %}
+                {% render_field form.nombre class="form-control col-4" %}
                 <label for="{{ form.apellido.id_for_label }}"
                        class="col-2 col-form-label">{{ form.apellido.label }}:</label>
-                {% render_field form.apellido class="form-control col-3" %}
+                {% render_field form.apellido class="form-control col-4" %}
             </div>
             <div class="form-group row">
                 <label for="{{ form.password.id_for_label }}"
                        class="col-2 col-form-label">{{ form.password.label }}:</label>
-                {% render_field form.password class="form-control col-3" %}
+                {% render_field form.password class="form-control col-4" %}
                 <label for="{{ form.esAdmin.id_for_label }}"
                        class="col-2 col-form-label form-check-label">{{ form.esAdmin.label }}:</label>
                 <label class="switch">
@@ -45,8 +46,11 @@
             <button type="submit" class="btn btn-primary">Registrar</button>
         </form>
         <br>
-        <form action="{% url 'Inventario:index' %}">
+    </div>
+    <div class="row justify-content-center align-items-center">
+        <form class="col-10" action="{% url 'Inventario:index' %}" style="padding-top:20px">
             <button type="submit" class="btn btn-secondary">Volver</button>
         </form>
     </div>
+
 {% endblock %}
