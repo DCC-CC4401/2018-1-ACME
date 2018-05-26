@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from Inventario.models import Reserva, Prestamo, Articulo, Espacio
+from Inventario.models import Reserva, Prestamo, Articulo, Espacio, EstadoReserva
 
 
 def index(request):
@@ -80,6 +80,9 @@ def perfilUsuario(request):
     prestamos = Prestamo.objects.filter(solicitante=request.user)
     context['reservas'] = reservas
     context['prestamos'] = prestamos
+    context['PROCESO'] = EstadoReserva.PROCESO
+    context['ACEPTADO'] = EstadoReserva.ACEPTADO
+    context['RECHAZADO'] = EstadoReserva.RECHAZADO
     return render(request, 'Inventario/perfilUsuario.html', context)
 
 
