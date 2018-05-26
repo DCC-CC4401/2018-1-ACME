@@ -27,7 +27,7 @@ class LoginForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
 
         # Set the label for the "username" field.
-        self.fields['username'].label = 'RUT o Email'
+        self.fields['username'].label = 'Email'
         self.fields['password'].label = 'Contraseña'
 
 

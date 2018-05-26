@@ -5,6 +5,10 @@
     Perfil de Usuario
 {% endblock %}
 
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'Inventario/css/perfilUsuario.css' %}">
+{% endblock %}
+
 {% block content %}
 
     <div class="row justify-content-center align-items-center">
@@ -18,26 +22,74 @@
         </div>
     </div>
     <div class="row justify-content-center align-items-center">
-        <div class="btn-group col-3">
-            <button type="button" class="col btn btn-success">Reserva</button>
-            <button type="button" class="col btn btn-secondary">Préstamos</button>
-        </div>
-        <button type="button" class="col-2 btn btn-danger">Eliminar Seleccionados</button>
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="pills-reservas-tab" data-toggle="pill" href="#pills-reservas" role="tab"
+                   aria-controls="pills-reservas" aria-selected="true">Reservas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-prestamos-tab" data-toggle="pill" href="#pills-prestamos" role="tab"
+                   aria-controls="pills-prestamos" aria-selected="false">Préstamos</a>
+            </li>
+        </ul>
+        <input type="submit" form="form" value="Eliminar Seleccionados" class="col-2 btn btn-danger">
     </div>
 
     <div class="row justify-content-center align-items-centerow">
         <div class="col-4">
-            <table class="table table-hover">
-                <tbody>
-                {% for reserva in reservas %}
-                    <tr>
-                        <td>{{ reserva.nombreItem }}</td>
-                        <td>Disponible</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-reservas" role="tabpanel"
+                     aria-labelledby="pills-reservas-tab">
+                    <form id="form" action="." method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="tipo" value="reservas">
+                        <table class="table table-hover">
+                            <tbody>
+                            {% for reserva in reservas %}
+                                <tr>
+                                    <td><input type="checkbox" name="lista" value="{{ reserva.id }}"></td>
+                                    <td>{{ reserva.nombreItem }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade" id="pills-prestamos" role="tabpanel"
+                     aria-labelledby="pills-prestamos-tab">
+                    <input type="hidden" name="tipo" value="prestamos">
+                    <table class="table table-hover">
+                        <tbody>
+                        {% for prestamo in prestamos %}
+                            <tr>
+                                <td>{{ prestamo.nombreItem }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
         <span class="col-4">Hola</span>
     </div>
+
+    {% if alerta %}
+        <div class="row justify-content-center align-items-center">
+            <div class="col-6">
+                <div id="myAlert" class="alert alert-dismissible fade
+            {% if tipoAlerta == 'error' %} alert-danger
+            {% elif tipoAlerta == 'success' %} alert-success
+            {% endif %}"
+                     role="alert">
+                    {{ alerta }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <script src="{% static 'Inventario/js/perfilUsuario.js' %}"></script>
 {% endblock %}
