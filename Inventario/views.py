@@ -3,8 +3,9 @@ from datetime import timedelta, date
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, resolve
 
+from Inventario.forms import ReservaForm
 from Inventario.models import Reserva, Prestamo, Articulo, Espacio, EstadoReserva
 
 
@@ -83,6 +84,7 @@ def perfilUsuario(request):
     context['PROCESO'] = EstadoReserva.PROCESO
     context['ACEPTADO'] = EstadoReserva.ACEPTADO
     context['RECHAZADO'] = EstadoReserva.RECHAZADO
+    context['forma'] = ReservaForm()
     return render(request, 'Inventario/perfilUsuario.html', context)
 
 
@@ -106,3 +108,34 @@ def upload_img(request):
             m.save()
             return HttpResponse('image upload success')
     return HttpResponseForbidden('allowed only via POST')
+
+
+def dbAPI(request):
+    def getForm(dict):
+        tipo = dict.get('tipo')
+        if tipo == 'Reserva':
+            return ReservaForm
+        else:
+            return None
+
+    form = getForm(request.POST)
+    redirect = request.POST.get('redirect', reverse('Inventario:index'))
+    alerta = ''
+    tipoAlerta = ''
+
+    if request.method == 'POST':
+        pass
+    elif request.method == 'PUT':
+        pass
+    elif request.method == 'DELETE':
+        pass
+
+    request.method = 'GET'
+    request.GET = {}
+    response = resolve(redirect)
+    response = response(request)
+    if alerta != '':
+        response.context_data['alerta'] = alerta
+        response.context_data['tipoAlerta'] = tipoAlerta
+
+    return response

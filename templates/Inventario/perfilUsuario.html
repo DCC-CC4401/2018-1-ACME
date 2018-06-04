@@ -114,23 +114,8 @@
                 </div>
             </div>
         </div>
+        {{ forma.as_p }}
     </div>
 
-    {% if alerta %}
-        <div class="row justify-content-center align-items-center">
-            <div class="col-6">
-                <div id="myAlert" class="alert alert-dismissible fade
-                    {% if tipoAlerta == 'error' %} alert-danger
-                    {% elif tipoAlerta == 'success' %} alert-success
-                    {% endif %}"
-                     role="alert">
-                    {{ alerta }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    {% endif %}
     <script src="{% static 'Inventario/js/perfilUsuario.js' %}"></script>
 {% endblock %}
