@@ -1,10 +1,11 @@
 # Create your views here.
+from datetime import timedelta, date
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from datetime import datetime, timedelta, date
 
-from Inventario.models import Reserva, Prestamo, Articulo, Espacio
+from Inventario.models import Reserva, Prestamo, Articulo, Espacio, EstadoReserva
 
 
 def index(request):
@@ -38,9 +39,9 @@ def landingPageUsuario(request):
 def landingPageAdministrador(request):
     reservas = Reserva.objects.order_by('-fechaReserva')
     prestamos = Prestamo.objects.order_by('-fechaPrestamo')
-    lunes = (date.today() - timedelta(date.today().isoweekday()-1))
-    domingo = (date.today() + timedelta(7-date.today().isoweekday()))
-    reservagrilla = Reserva.objects.filter(fechaReserva__range=[lunes,domingo])
+    lunes = (date.today() - timedelta(date.today().isoweekday() - 1))
+    domingo = (date.today() + timedelta(7 - date.today().isoweekday()))
+    reservagrilla = Reserva.objects.filter(fechaReserva__range=[lunes, domingo])
     context = {
         'reservas': reservas,
         'prestamos': prestamos,
@@ -54,12 +55,34 @@ def landingPageAdministrador(request):
 def perfilUsuario(request):
     if not request.user.is_authenticated or request.user.esAdmin:
         return HttpResponseRedirect(reverse('Inventario:index'))
+
+    context = {}
+
+    if request.method == 'POST':
+        count = 0
+        list = request.POST.getlist('lista')
+        for id in list:
+            try:
+                Reserva.objects.get(id=id, solicitante=request.user).delete()
+                count += 1
+            except Reserva.DoesNotExist:
+                pass
+
+        if count != len(list):
+            context['alerta'] = 'Hubo un problema con la solicitud, se eliminaron {0} de {1} Reservas'.format(
+                str(count), str(len(list)))
+            context['tipoAlerta'] = 'error'
+        else:
+            context['alerta'] = 'Se eliminaron {0} Reservas'.format(str(count))
+            context['tipoAlerta'] = 'success'
+
     reservas = Reserva.objects.filter(solicitante=request.user)
     prestamos = Prestamo.objects.filter(solicitante=request.user)
-    context = {
-        'reservas': reservas,
-        'prestamos': prestamos,
-    }
+    context['reservas'] = reservas
+    context['prestamos'] = prestamos
+    context['PROCESO'] = EstadoReserva.PROCESO
+    context['ACEPTADO'] = EstadoReserva.ACEPTADO
+    context['RECHAZADO'] = EstadoReserva.RECHAZADO
     return render(request, 'Inventario/perfilUsuario.html', context)
 
 
@@ -72,6 +95,7 @@ def fichaArticulo(request, articuloId):
         'articulo': articulo,
     }
     return render(request, 'Inventario/fichaArticulo.html', context)
+
 
 def upload_img(request):
     if request.method == 'POST':

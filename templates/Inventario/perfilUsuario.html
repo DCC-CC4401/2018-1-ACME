@@ -1,8 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load Inventario_filters %}
 
 {% block title %}
     Perfil de Usuario
+{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'Inventario/css/perfilUsuario.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -18,26 +23,114 @@
         </div>
     </div>
     <div class="row justify-content-center align-items-center">
-        <div class="btn-group col-3">
-            <button type="button" class="col btn btn-success">Reserva</button>
-            <button type="button" class="col btn btn-secondary">Préstamos</button>
-        </div>
-        <button type="button" class="col-2 btn btn-danger">Eliminar Seleccionados</button>
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="pills-reservas-tab" data-toggle="pill" href="#pills-reservas" role="tab"
+                   aria-controls="pills-reservas" aria-selected="true">Reservas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-prestamos-tab" data-toggle="pill" href="#pills-prestamos" role="tab"
+                   aria-controls="pills-prestamos" aria-selected="false">Préstamos</a>
+            </li>
+        </ul>
+        <input type="submit" form="form" value="Eliminar Seleccionados" class="col-2 btn btn-danger">
     </div>
 
-    <div class="row justify-content-center align-items-centerow">
-        <div class="col-4">
-            <table class="table table-hover">
-                <tbody>
-                {% for reserva in reservas %}
-                    <tr>
-                        <td>{{ reserva.nombreItem }}</td>
-                        <td>Disponible</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-reservas" role="tabpanel"
+             aria-labelledby="pills-reservas-tab">
+            <div class="row justify-content-center">
+                <div class="col-4">
+                    <form id="form" action="." method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="tipo" value="reservas">
+                        <div class="list-group" id="list-tab-reservas" role="tablist">
+                            {% for reserva in reservas %}
+                                <a href="#list-reserva{{ reserva.id }}"
+                                   class="list-group-item list-group-item-action
+                                            {% if forloop.counter == 1 %}
+                                                active
+                                            {% endif %}"
+                                   id="list-reserva{{ reserva.id }}-list" data-toggle="list" role="tab"
+                                   aria-controls="reserva{{ reserva.id }}">
+                                    {% if reserva.ultimoEstado.estado == PROCESO %}
+                                        <input type="checkbox" name="lista" value="{{ reserva.id }}">
+                                    {% endif %}
+                                    {{ reserva|nombreItem }}
+                                    <span class="badge
+                                            {% if reserva.ultimoEstado.estado == PROCESO %} badge-info
+                                            {% elif reserva.ultimoEstado.estado == ACEPTADO %} badge-success
+                                            {% elif reserva.ultimoEstado.estado == RECHAZADO %} badge-danger
+                                            {% endif %}">
+                                        <i class="fas fa-angle-left"></i> {{ reserva.ultimoEstado.get_estado_display }}
+                                        </span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <div class="tab-content" id="nav-reservas-tabContent">
+                        {% for reserva in reservas %}
+                            <div class="tab-pane fade {% if forloop.counter == 1 %} show active {% endif %}"
+                                 id="list-reserva{{ reserva.id }}" role="tabpanel"
+                                 aria-labelledby="list-reserva{{ reserva.id }}-list">
+                                {{ reserva.articulo.descripcion }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
-        <span class="col-4">Hola</span>
+
+        <div class="tab-pane fade" id="pills-prestamos" role="tabpanel"
+             aria-labelledby="pills-prestamos-tab">
+            <div class="row justify-content-center">
+                <div class="col-4">
+                    <div class="list-group" id="list-tab-prestamos" role="tablist">
+                        {% for prestamo in prestamos %}
+                            <a href="#list-prestamo{{ prestamo.id }}"
+                               class="list-group-item list-group-item-action
+                                            {% if forloop.counter == 1 %}
+                                                active
+                                            {% endif %}"
+                               id="list-prestamo{{ prestamo.id }}-list" data-toggle="list" role="tab"
+                               aria-controls="prestamo{{ prestamo.id }}">
+                                {{ prestamo|nombreItem }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="tab-content" id="nav-prestamos-tabContent">
+                        {% for prestamo in prestamos %}
+                            <div class="tab-pane fade show {% if forloop.counter == 1 %} show active {% endif %}"
+                                 id="list-prestamo{{ prestamo.id }}" role="tabpanel"
+                                 aria-labelledby="list-prestamo{{ prestamo.id }}-list">
+                                {{ prestamo.articulo.descripcion }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    {% if alerta %}
+        <div class="row justify-content-center align-items-center">
+            <div class="col-6">
+                <div id="myAlert" class="alert alert-dismissible fade
+                    {% if tipoAlerta == 'error' %} alert-danger
+                    {% elif tipoAlerta == 'success' %} alert-success
+                    {% endif %}"
+                     role="alert">
+                    {{ alerta }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <script src="{% static 'Inventario/js/perfilUsuario.js' %}"></script>
 {% endblock %}
