@@ -22,20 +22,16 @@ def index(request):
 
 
 def busquedaArticulos(request):
-    q = request.GET.get('q', '')
-    articulo = Articulo.objects.filter(nombre__icontains=q)
-    return render(request, 'Inventario/landingPageUsuario.html', {'articulo': articulo})
+    context = {}
+    if (request.GET.get('q', '')):
+        q = request.GET.get('q', '')
+        articulo = Articulo.objects.all().filter(nombre__icontains=q).order_by('nombre')
+        context['articulos'] = articulo
+    return render(request, 'Inventario/landingPageUsuario.html', context)
 
 
 def landingPageUsuario(request):
-    articulos = Articulo.objects
-    espacios = Espacio.objects
-    reservas = Reserva.objects
-    context = {
-        'articulos': articulos,
-        'espacios': espacios,
-        'reservas': reservas,
-    }
+    context = {}
     return render(request, 'Inventario/landingPageUsuario.html', context)
 
 

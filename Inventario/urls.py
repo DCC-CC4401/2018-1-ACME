@@ -33,5 +33,7 @@ urlpatterns = [
     path('espacio/<int:pk>/delete/', views.EspacioDelete.as_view(), name='espacioDelete'),
 
     path('lpadmin/', views.landingPageAdministrador, name='lpAdmin'),
-    path('lpusuario/', views.landingPageUsuario, name='lpUsuario')
+    path('lpusuario/', views.landingPageUsuario, name='lpUsuario'),
+    path('buscar/', views.busquedaArticulos, name='buscar'),
+    path('buscar/articulo/<int:articuloId>/', views.fichaArticulo, name='articuloEncontrado')
 ]

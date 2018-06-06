@@ -16,12 +16,25 @@
         <button style="width:50%">Espacios</button>
     </div>
 
-    <form action="url/buscador/" method="GET">
+    <form action="{% url 'Inventario:buscar' %}" method="GET">
         {% csrf_token %}
         <div class="search">
             <input name="q" type="text" class="searchTerm" placeholder="Busca un artículo">
             <button type="submit" class="searchButton">Buscar</button>
         </div>
     </form>
+
+
+
+    {% for articulo in articulos %}
+    <form action="articulo/{{ articulo.pk }}" method="GET">
+        {% csrf_token %}
+        <div class="button" id="resultado">
+            {% if articulos %}
+            <button type="submit">{{articulo.nombre}}</button>
+            {% endif %}
+        </div>
+    </form>
+    {% endfor %}
 
 {% endblock %}
