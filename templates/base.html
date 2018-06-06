@@ -47,7 +47,7 @@
                 </li>
                 {% if not user.esAdmin %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'Inventario:perfilUsuario' %}">Mi Perfil</a>
+                        <a class="nav-link" href="{% url 'Inventario:perfilUsuario' user.id %}">Mi Perfil</a>
                     </li>
                 {% endif %}
                 <li class="nav-item">
@@ -63,20 +63,21 @@
         {% block content %}
         {% endblock %}
     </main>
-    {% if alerta %}
+
+    {% if messages %}
         <div class="row justify-content-center align-items-center">
-            <div class="col-6">
-                <div id="myAlert" class="alert alert-dismissible fade
-                    {% if tipoAlerta == 'error' %} alert-danger
-                    {% elif tipoAlerta == 'success' %} alert-success
-                    {% endif %}"
-                     role="alert">
-                    {{ alerta }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+            {% for message in messages %}
+                <div class="col-6">
+                    <div id="myAlert"
+                         class="alert alert-dismissible fade {% if message.tags %} {{ message.tags }} {% endif %}"
+                         role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            {% endfor %}
         </div>
     {% endif %}
 </div>

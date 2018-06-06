@@ -17,3 +17,16 @@
     width: 80px;
     height: 80px;
 }
+
+#myAlert {
+    position: fixed;
+    bottom: 10px;
+    width: 50%;
+    z-index: 999;
+}
+
+main::after {
+    clear: both;
+    content: "";
+    display: table;
+}

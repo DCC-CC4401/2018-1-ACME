@@ -1,18 +1,17 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from django.forms import ModelForm
-
-from .models import CustomUser
 
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
-        model = CustomUser
+        model = get_user_model()
         fields = ('username', 'email', 'password', 'nombre', 'apellido')
 
 
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
-        model = CustomUser
+        model = get_user_model()
         fields = UserChangeForm.Meta.fields
 
 
@@ -33,15 +32,11 @@ class LoginForm(AuthenticationForm):
 
 class RegistrationForm(ModelForm):
     class Meta:
-        model = CustomUser
+        model = get_user_model()
         fields = ('username', 'email', 'password', 'esAdmin', 'nombre', 'apellido')
         labels = {
             'username': 'RUT',
             'email': 'Email',
-            'password': 'Contraseña',
-            'esAdmin': 'Administrador',
-            'nombre': 'Nombre',
-            'apellido': 'Apellido',
         }
         help_texts = {
             'username': None,

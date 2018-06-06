@@ -3,7 +3,46 @@ from django.db import models
 # Create your models here.
 from django.utils.datetime_safe import datetime
 
-from customAuth.models import CustomUser
+HABILITADO = 'H'
+INHABILITADO = 'I'
+PENDIENTE = 'P'
+ENTREGADO = 'E'
+RECHAZADO = 'R'
+RECIBIDO = 'C'
+PERDIDO = 'D'
+DISPONIBLE = 'S'
+PRESTAMO = 'M'
+REPARACION = 'A'
+
+ESTADOS_USUARIO = (
+    (HABILITADO, 'Habilitado'),
+    (INHABILITADO, 'Inhabilitado'),
+)
+
+ESTADOS_RESERVA = (
+    (PENDIENTE, 'Pendiente'),
+    (ENTREGADO, 'Entregado'),
+    (RECHAZADO, 'Rechazado'),
+)
+
+ESTADOS_PRESTAMO = (
+    (PENDIENTE, 'Pendiente'),
+    (RECIBIDO, 'Recibido'),
+    (PERDIDO, 'Perdido'),
+)
+
+ESTADOS_ARTICULO = (
+    (DISPONIBLE, 'Disponible'),
+    (PRESTAMO, 'En Préstamo'),
+    (REPARACION, 'En Reparación'),
+    (PERDIDO, 'Perdido'),
+)
+
+ESTADOS_ESPACIO = (
+    (DISPONIBLE, 'Disponible'),
+    (PRESTAMO, 'En Préstamo'),
+    (REPARACION, 'En Reparación'),
+)
 
 
 def get_time():
@@ -14,62 +53,51 @@ def get_date():
     return datetime.now().date()
 
 
+class Usuario(AbstractUser):
+    nombre = models.CharField(max_length=30, verbose_name='Nombre')
+    apellido = models.CharField(max_length=30, verbose_name='Apellido')
+    esAdmin = models.BooleanField(default=False, verbose_name='Administrador')
+    estado = models.CharField(max_length=1, choices=ESTADOS_USUARIO, default=HABILITADO, verbose_name='Estado')
+
+
 class Articulo(models.Model):
-    nombre = models.CharField(max_length=50)
-    descripcion = models.CharField(max_length=500)
-    foto = models.ImageField(upload_to='static/imgarticulo/', default='imgarticulo/None/no-img.jpg')
+    nombre = models.CharField(max_length=50, verbose_name='Nombre')
+    descripcion = models.CharField(max_length=500, verbose_name='Descripción')
+    foto = models.ImageField(upload_to='static/imgarticulo/', default='imgarticulo/None/no-img.jpg',
+                             verbose_name='Foto')
+    estado = models.CharField(max_length=1, choices=ESTADOS_ARTICULO, default=DISPONIBLE, verbose_name='Estado')
 
 
 class Espacio(models.Model):
-    nombre = models.CharField(max_length=50)
-    descripcion = models.CharField(max_length=500)
-    foto = models.ImageField(null=True)
-    capacidad = models.PositiveIntegerField(default=0)
+    nombre = models.CharField(max_length=50, verbose_name='Nombre')
+    descripcion = models.CharField(max_length=500, verbose_name='Descripción')
+    foto = models.ImageField(null=True, verbose_name='Foto')
+    capacidad = models.PositiveIntegerField(default=0, verbose_name='Capacidad')
+    estado = models.CharField(max_length=1, choices=ESTADOS_ESPACIO, default=DISPONIBLE, verbose_name='Estado')
 
 
 class Reserva(models.Model):
-    horaInicio = models.TimeField(default=get_time)
-    horaTermino = models.TimeField(default=get_time)
-    solicitante = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
-    articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE, null=True, blank=True)
-    espacio = models.ForeignKey(Espacio, on_delete=models.CASCADE, null=True, blank=True)
-    fechaReserva = models.DateField(default=get_date)
-    fechaCreacion = models.DateTimeField(default=datetime.now)
-    ultimoEstado = models.ForeignKey('EstadoReserva', on_delete=models.CASCADE, null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        create_estado = False
-        if self.pk is None:
-            create_estado = True
-        super(Reserva, self).save(*args, **kwargs)
-        if create_estado:
-            estado = EstadoReserva.objects.create(reserva_asociada=self)
-            self.ultimoEstado = estado
-            estado.save()
-            self.save()
+    horaInicio = models.TimeField(default=get_time, verbose_name='Hora de Inicio')
+    horaTermino = models.TimeField(default=get_time, verbose_name='Hora de Término')
+    solicitante = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, verbose_name='Solicitante')
+    articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Artículo')
+    espacio = models.ForeignKey(Espacio, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Espacio')
+    fechaReserva = models.DateField(default=get_date, verbose_name='Fecha de Reserva')
+    fechaCreacion = models.DateTimeField(default=datetime.now, verbose_name='Fecha de Creación')
+    estado = models.CharField(max_length=1, choices=ESTADOS_RESERVA, default=PENDIENTE, verbose_name='Estado')
 
 
 class Prestamo(models.Model):
-    horaInicio = models.TimeField(default=get_time)
-    horaTermino = models.TimeField(default=get_time)
-    solicitante = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
-    articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE, null=True, blank=True)
-    espacio = models.ForeignKey(Espacio, on_delete=models.CASCADE, null=True, blank=True)
-    fechaPrestamo = models.DateField(default=get_date)
+    horaInicio = models.TimeField(default=get_time, verbose_name='Hora de Inicio')
+    horaTermino = models.TimeField(default=get_time, verbose_name='Hora de Término')
+    solicitante = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, verbose_name='Solicitante')
+    articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Artículo')
+    espacio = models.ForeignKey(Espacio, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Espacio')
+    fechaPrestamo = models.DateField(default=get_date, verbose_name='Fecha de Préstamo')
+    estado = models.CharField(max_length=1, choices=ESTADOS_PRESTAMO, default=PENDIENTE, verbose_name='Estado')
 
 
 class EstadoReserva(models.Model):
-    PROCESO = 'P'
-    ACEPTADO = 'A'
-    RECHAZADO = 'R'
-    ESTADO_CHOICES = (
-        (PROCESO, 'En Proceso'),
-        (ACEPTADO, 'Aceptado'),
-        (RECHAZADO, 'Rechazado'),
-    )
-
     fecha = models.DateTimeField(default=datetime.now)
-    estado = models.CharField(max_length=1,
-                              choices=ESTADO_CHOICES,
-                              default=PROCESO)
+    estado = models.CharField(max_length=1, choices=ESTADOS_RESERVA, default=PENDIENTE)
     reserva_asociada = models.ForeignKey(Reserva, on_delete=models.CASCADE, null=True)

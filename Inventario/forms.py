@@ -1,26 +1,43 @@
-from django import forms
 from django.forms import ModelForm
 
-from .models import Reserva, EstadoReserva
+from .models import Usuario, Reserva, Prestamo, Articulo, Espacio
+
+registeredForms = {}
+
+
+class UsuarioForm(ModelForm):
+    class Meta:
+        model = Usuario
+        fields = ['username', 'email', 'nombre', 'apellido', 'esAdmin', 'estado']
+        labels = {
+            'username': 'RUT',
+            'email': 'Email',
+        }
+        help_texts = {
+            'username': None,
+            'password': None,
+        }
 
 
 class ReservaForm(ModelForm):
-    estado = forms.ChoiceField(choices=EstadoReserva.ESTADO_CHOICES)
-
     class Meta:
         model = Reserva
-        fields = ('articulo', 'espacio', 'fechaReserva', 'horaInicio', 'horaTermino')
-        labels = {
-            'articulo': 'Artículo',
-            'espacio': 'Espacio',
-            'fechaReserva': 'Fecha de la Reserva',
-            'horaInicio': 'Hora de Inicio',
-            'horaTermino': 'Hora de Término',
-        }
+        fields = ['articulo', 'espacio', 'fechaReserva', 'horaInicio', 'horaTermino', 'estado']
 
-    def save(self, commit=True):
-        reserva = super(ReservaForm, self).save(commit=False)
-        reserva.ultimoEstado = EstadoReserva.objects.create(estado=self.estado, reserva_asociada=reserva)
-        if commit:
-            reserva.save()
-        return reserva
+
+class PrestamoForm(ModelForm):
+    class Meta:
+        model = Prestamo
+        fields = ['articulo', 'espacio', 'fechaPrestamo', 'solicitante', 'horaInicio', 'horaTermino', 'estado']
+
+
+class ArticuloForm(ModelForm):
+    class Meta:
+        model = Articulo
+        fields = ['nombre', 'descripcion', 'foto', 'estado']
+
+
+class EspacioForm(ModelForm):
+    class Meta:
+        model = Espacio
+        fields = ['nombre', 'descripcion', 'foto', 'capacidad', 'estado']

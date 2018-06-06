@@ -41,7 +41,7 @@
              aria-labelledby="pills-reservas-tab">
             <div class="row justify-content-center">
                 <div class="col-4">
-                    <form id="form" action="." method="post">
+                    <form id="form" action="{% url 'Inventario:perfilUsuario' user.id %}" method="post">
                         {% csrf_token %}
                         <input type="hidden" name="tipo" value="reservas">
                         <div class="list-group" id="list-tab-reservas" role="tablist">
@@ -114,7 +114,6 @@
                 </div>
             </div>
         </div>
-        {{ forma.as_p }}
     </div>
 
     <script src="{% static 'Inventario/js/perfilUsuario.js' %}"></script>
