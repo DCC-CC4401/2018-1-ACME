@@ -68,3 +68,9 @@ body{
     color: white;
     background-color: green;
 }
+
+#resultado {
+    position: relative;
+        top: 100px;
+        left: -765px;
+}
