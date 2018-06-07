@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms',
     'Inventario.apps.InventarioConfig',
     'customAuth',
     'widget_tweaks',
@@ -122,6 +123,7 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'Inventario.Usuario'
 AUTHENTICATION_BACKENDS = ('customAuth.backend.CustomBackend',)
 
+LOGIN_URL = 'Inventario:index'
 LOGIN_REDIRECT_URL = 'Inventario:index'
 LOGOUT_REDIRECT_URL = 'Inventario:index'
 
@@ -132,3 +134,5 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'

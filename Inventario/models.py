@@ -58,6 +58,7 @@ class Usuario(AbstractUser):
     apellido = models.CharField(max_length=30, verbose_name='Apellido')
     esAdmin = models.BooleanField(default=False, verbose_name='Administrador')
     estado = models.CharField(max_length=1, choices=ESTADOS_USUARIO, default=HABILITADO, verbose_name='Estado')
+    email = models.EmailField(max_length=80, verbose_name='Email', unique=True)
 
 
 class Articulo(models.Model):
@@ -79,7 +80,7 @@ class Espacio(models.Model):
 class Reserva(models.Model):
     horaInicio = models.TimeField(default=get_time, verbose_name='Hora de Inicio')
     horaTermino = models.TimeField(default=get_time, verbose_name='Hora de Término')
-    solicitante = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, verbose_name='Solicitante')
+    solicitante = models.ForeignKey(Usuario, on_delete=models.CASCADE, verbose_name='Solicitante')
     articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Artículo')
     espacio = models.ForeignKey(Espacio, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Espacio')
     fechaReserva = models.DateField(default=get_date, verbose_name='Fecha de Reserva')
@@ -90,7 +91,7 @@ class Reserva(models.Model):
 class Prestamo(models.Model):
     horaInicio = models.TimeField(default=get_time, verbose_name='Hora de Inicio')
     horaTermino = models.TimeField(default=get_time, verbose_name='Hora de Término')
-    solicitante = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, verbose_name='Solicitante')
+    solicitante = models.ForeignKey(Usuario, on_delete=models.CASCADE, verbose_name='Solicitante')
     articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Artículo')
     espacio = models.ForeignKey(Espacio, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Espacio')
     fechaPrestamo = models.DateField(default=get_date, verbose_name='Fecha de Préstamo')
@@ -100,4 +101,4 @@ class Prestamo(models.Model):
 class EstadoReserva(models.Model):
     fecha = models.DateTimeField(default=datetime.now)
     estado = models.CharField(max_length=1, choices=ESTADOS_RESERVA, default=PENDIENTE)
-    reserva_asociada = models.ForeignKey(Reserva, on_delete=models.CASCADE, null=True)
+    reserva_asociada = models.ForeignKey(Reserva, on_delete=models.CASCADE)

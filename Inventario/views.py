@@ -2,6 +2,7 @@
 from datetime import timedelta, date
 
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -87,7 +88,6 @@ def perfilUsuario(request, usuarioId):
     context['PENDIENTE'] = PENDIENTE
     context['ENTREGADO'] = ENTREGADO
     context['RECHAZADO'] = RECHAZADO
-    context['forma'] = ReservaForm()
     return render(request, 'Inventario/perfilUsuario.html', context)
 
 
@@ -114,7 +114,7 @@ def upload_img(request):
 
 
 def fichaReserva(request, reservaId):
-    return HttpResponse('hola')
+    return None
 
 
 def fichaPrestamo(request, prestamoId):
@@ -125,50 +125,73 @@ def fichaEspacio(request, espacioId):
     return None
 
 
-class UsuarioCreate(CreateView):
+class UsuarioCreate(UserPassesTestMixin, CreateView):
     model = Usuario
     form_class = UsuarioForm
     success_url = reverse_lazy('Inventario:index')
     template_name = 'Inventario/usuario_form.html'
+    redirect_field_name = None
+
+    def test_func(self):
+        return not self.request.user.is_authenticated or self.request.user.esAdmin
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Hubo un error en el formulario, el usuario no fue creada.')
+        messages.error(self.request, 'Hubo un error en el formulario, el usuario no fue creado.')
         return super().form_invalid(form)
 
     def form_valid(self, form):
         messages.success(self.request, 'El usuario fue creado.')
         return super().form_valid(form)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
-class UsuarioUpdate(UpdateView):
+
+class UsuarioUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Usuario
     form_class = UsuarioForm
     success_url = reverse_lazy('Inventario:index')
     template_name = 'Inventario/usuario_form.html'
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Hubo un error en el formulario, el usuario no fue modificada.')
+        messages.error(self.request, 'Hubo un error en el formulario, el usuario no fue modificado.')
         return super().form_invalid(form)
 
     def form_valid(self, form):
         messages.success(self.request, 'El usuario fue modificado.')
         return super().form_valid(form)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
-class UsuarioDelete(DeleteView):
+
+class UsuarioDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Usuario
     success_url = reverse_lazy('Inventario:index')
     template_name = 'Inventario/usuario_form_confirm.html'
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'El usuario fue eliminado.')
         return super().delete(self, request, *args, **kwargs)
 
 
-class ReservaCreate(CreateView):
+class ReservaCreate(LoginRequiredMixin, CreateView):
     model = Reserva
     form_class = ReservaForm
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo un error en el formulario, la reserva no fue creada.')
@@ -178,11 +201,17 @@ class ReservaCreate(CreateView):
         messages.success(self.request, 'La reserva fue creada.')
         return super().form_valid(form)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
-class ReservaUpdate(UpdateView):
+
+class ReservaUpdate(LoginRequiredMixin, UpdateView):
     model = Reserva
     form_class = ReservaForm
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo un error en el formulario, la reserva no fue modificada.')
@@ -192,20 +221,30 @@ class ReservaUpdate(UpdateView):
         messages.success(self.request, 'La reserva fue modificada.')
         return super().form_valid(form)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
-class ReservaDelete(DeleteView):
+
+class ReservaDelete(LoginRequiredMixin, DeleteView):
     model = Reserva
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'La reserva fue eliminada.')
         return super().delete(self, request, *args, **kwargs)
 
 
-class PrestamoCreate(CreateView):
+class PrestamoCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Prestamo
     form_class = PrestamoForm
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo un error en el formulario, el préstamo no fue creado.')
@@ -215,11 +254,20 @@ class PrestamoCreate(CreateView):
         messages.success(self.request, 'El préstamo fue creado.')
         return super().form_valid(form)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
-class PrestamoUpdate(UpdateView):
+
+class PrestamoUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Prestamo
     form_class = PrestamoForm
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo un error en el formulario, el préstamo no fue modificado.')
@@ -229,20 +277,33 @@ class PrestamoUpdate(UpdateView):
         messages.success(self.request, 'El préstamo fue modificado.')
         return super().form_valid(form)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
 
-class PrestamoDelete(DeleteView):
+
+class PrestamoDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Prestamo
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'El préstamo fue eliminado.')
         return super().delete(self, request, *args, **kwargs)
 
 
-class ArticuloCreate(CreateView):
+class ArticuloCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Articulo
     form_class = ArticuloForm
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo un error en el formulario, el artículo no fue creado.')
@@ -253,10 +314,14 @@ class ArticuloCreate(CreateView):
         return super().form_valid(form)
 
 
-class ArticuloUpdate(UpdateView):
+class ArticuloUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Articulo
     form_class = ArticuloForm
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo un error en el formulario, el artículo no fue modificado.')
@@ -267,19 +332,27 @@ class ArticuloUpdate(UpdateView):
         return super().form_valid(form)
 
 
-class ArticuloDelete(DeleteView):
+class ArticuloDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Articulo
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'El artículo fue eliminado.')
         return super().delete(self, request, *args, **kwargs)
 
 
-class EspacioCreate(CreateView):
+class EspacioCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Espacio
     form_class = EspacioForm
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo un error en el formulario, el espacio no fue creado.')
@@ -290,10 +363,14 @@ class EspacioCreate(CreateView):
         return super().form_valid(form)
 
 
-class EspacioUpdate(UpdateView):
+class EspacioUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Espacio
     form_class = EspacioForm
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo un error en el formulario, el espacio no fue modificado.')
@@ -304,9 +381,13 @@ class EspacioUpdate(UpdateView):
         return super().form_valid(form)
 
 
-class EspacioDelete(DeleteView):
+class EspacioDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Espacio
     success_url = reverse_lazy('Inventario:index')
+    redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'El espacio fue eliminado.')
