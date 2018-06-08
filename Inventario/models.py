@@ -60,6 +60,12 @@ class Usuario(AbstractUser):
     estado = models.CharField(max_length=1, choices=ESTADOS_USUARIO, default=HABILITADO, verbose_name='Estado')
     email = models.EmailField(max_length=80, verbose_name='Email', unique=True)
 
+    def get_code(self):
+        return 'U' + str(self.id)
+
+    def __str__(self):
+        return self.nombre + ' ' + self.apellido + ' ' + self.username + ' [' + self.get_code() + ']'
+
 
 class Articulo(models.Model):
     nombre = models.CharField(max_length=50, verbose_name='Nombre')
@@ -68,6 +74,12 @@ class Articulo(models.Model):
                              verbose_name='Foto')
     estado = models.CharField(max_length=1, choices=ESTADOS_ARTICULO, default=DISPONIBLE, verbose_name='Estado')
 
+    def get_code(self):
+        return 'A' + str(self.id)
+
+    def __str__(self):
+        return self.nombre + ' [' + self.get_code() + ']'
+
 
 class Espacio(models.Model):
     nombre = models.CharField(max_length=50, verbose_name='Nombre')
@@ -75,6 +87,12 @@ class Espacio(models.Model):
     foto = models.ImageField(null=True, verbose_name='Foto')
     capacidad = models.PositiveIntegerField(default=0, verbose_name='Capacidad')
     estado = models.CharField(max_length=1, choices=ESTADOS_ESPACIO, default=DISPONIBLE, verbose_name='Estado')
+
+    def get_code(self):
+        return 'E' + str(self.id)
+
+    def __str__(self):
+        return self.nombre + ' [' + self.get_code() + ']'
 
 
 class Reserva(models.Model):
@@ -87,6 +105,15 @@ class Reserva(models.Model):
     fechaCreacion = models.DateTimeField(default=datetime.now, verbose_name='Fecha de Creación')
     estado = models.CharField(max_length=1, choices=ESTADOS_RESERVA, default=PENDIENTE, verbose_name='Estado')
 
+    def get_code(self):
+        return 'R' + str(self.id)
+
+    def __str__(self):
+        if self.articulo is not None:
+            return '[' + self.get_code() + '] (' + str(self.articulo) + ')'
+        else:
+            return '[' + self.get_code() + '] (' + str(self.espacio) + ')'
+
 
 class Prestamo(models.Model):
     horaInicio = models.TimeField(default=get_time, verbose_name='Hora de Inicio')
@@ -96,6 +123,15 @@ class Prestamo(models.Model):
     espacio = models.ForeignKey(Espacio, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Espacio')
     fechaPrestamo = models.DateField(default=get_date, verbose_name='Fecha de Préstamo')
     estado = models.CharField(max_length=1, choices=ESTADOS_PRESTAMO, default=PENDIENTE, verbose_name='Estado')
+
+    def get_code(self):
+        return 'P' + str(self.id)
+
+    def __str__(self):
+        if self.articulo is not None:
+            return '[' + self.get_code() + '] (' + str(self.articulo) + ')'
+        else:
+            return '[' + self.get_code() + '] (' + str(self.espacio) + ')'
 
 
 class EstadoReserva(models.Model):

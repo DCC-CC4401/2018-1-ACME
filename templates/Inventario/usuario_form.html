@@ -1,62 +1,12 @@
-{% extends 'base.html' %}
-{% load static %}
-{% load widget_tweaks %}
+{% extends 'Inventario/form_template.html' %}
 
-{% block extra_head %}
-    <link rel="stylesheet" href="{% static 'Inventario/css/toggle.css' %}">
-{% endblock %}
-
-{% block content %}
-    <div class="col-md-8 offset-md-2">
-        <div class="card card-outline-secondary">
-            <div class="card-header">
-                <h3 class="mb-0">{% if object %}Datos del Usuario{% else %}Registrar Usuario{% endif %}</h3>
-            </div>
-            <div class="card-body">
-                <form method="post" class="form" role="form">
-                    {% csrf_token %}
-                    {% for field in form.visible_fields %}
-                        {% if field.name != 'esAdmin' or user.esAdmin %}
-                            {% if field.name != 'password' or not user.is_authenticated %}
-                                {% if field.name != 'password2' or not user.is_authenticated %}
-                                    <div class="form-group row">
-                                        <label for="{{ field.id_for_label }}"
-                                               class="col-lg-3 col-form-label form-control-label">{{ field.label }}</label>
-                                        <div class="col-lg-9">
-                                            {% if form.is_bound %}
-                                                {% if field.errors %}
-                                                    {% render_field field class="form-control is-invalid" %}
-                                                    {% for error in field.errors %}
-                                                        <small class="form-text text-danger">{{ error }}</small>
-                                                    {% endfor %}
-                                                {% else %}
-                                                    {% render_field field class="form-control is-valid" %}
-                                                {% endif %}
-                                            {% else %}
-                                                {% render_field field class="form-control" %}
-                                            {% endif %}
-                                            {% if field.help_text %}
-                                                <small class="form-text text-muted">{{ field.help_text }}</small>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                    <div class="form-group row">
-                        <label class="col-lg-3 col-form-label form-control-label"></label>
-                        <div class="col-lg-9">
-                            <a href="{% url 'Inventario:index' %}" class="btn btn-secondary">Volver</a>
-                            <input type="submit" class="btn btn-primary" value="Guardar">
-                            {% if object %}
-                                <a href="{% url 'Inventario:usuarioDelete' object.pk %}" class="btn btn-danger">Eliminar
-                                    Usuario</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+{% block create_title %}Registrar Usuario{% endblock %}
+{% block update_title %}Datos del Usuario{% endblock %}
+{% block buttons %}
+    <a href="{% url 'Inventario:index' %}" class="btn btn-secondary">Volver</a>
+    <input type="submit" class="btn btn-primary" value="Guardar">
+    {% if object %}
+        <a href="{% url 'Inventario:usuarioDelete' object.pk %}" class="btn btn-danger">Eliminar
+            Usuario</a>
+    {% endif %}
 {% endblock %}

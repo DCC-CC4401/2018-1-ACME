@@ -1,6 +1,7 @@
 import re
 
-from django.forms import ModelForm, PasswordInput, Textarea, CharField, ValidationError
+from bootstrap_datepicker_plus import DatePickerInput, TimePickerInput
+from django.forms import ModelForm, PasswordInput, Textarea, CharField, ValidationError, HiddenInput
 
 from Inventario.widgets import SwitchWidget
 from .models import Usuario, Reserva, Prestamo, Articulo, Espacio
@@ -11,6 +12,16 @@ class UsuarioForm(ModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
+        if not self.user.is_authenticated or not self.user.esAdmin:
+            self.fields['esAdmin'].widget = HiddenInput()
+            self.fields['esAdmin'].required = False
+            self.fields['estado'].widget = HiddenInput()
+            self.fields['estado'].required = False
+        if self.instance.pk is not None:
+            self.fields['password'].widget = HiddenInput()
+            self.fields['password'].required = False
+            self.fields['password2'].widget = HiddenInput()
+            self.fields['password2'].required = False
 
     password2 = CharField(widget=PasswordInput, label='Repita la contraseña')
 
@@ -19,7 +30,6 @@ class UsuarioForm(ModelForm):
         fields = ['email', 'username', 'nombre', 'apellido', 'estado', 'esAdmin', 'password']
         labels = {
             'username': 'RUT',
-            'email': 'Email',
             'password': 'Contraseña',
         }
         help_texts = {
@@ -58,24 +68,12 @@ class UsuarioForm(ModelForm):
             raise ValidationError('El RUT ingresado es inválido')
         return username
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        return email
-
-    def clean_nombre(self):
-        nombre = self.cleaned_data.get('nombre')
-        return nombre
-
-    def clean_apellido(self):
-        apellido = self.cleaned_data.get('apellido')
-        return apellido
-
     def clean_password(self):
         password = self.cleaned_data.get('password')
+        if self.instance.pk is None and len(password) < 8:
+            raise ValidationError('El largo de la contraseña debe ser mayor o igual a 8')
         if self.instance.pk is not None:
             password = self.instance.password
-        if len(password) < 8:
-            raise ValidationError('El largo de la contraseña debe ser mayor o igual a 8')
         return password
 
     def clean_password2(self):
@@ -89,8 +87,6 @@ class UsuarioForm(ModelForm):
         password = self.cleaned_data.get('password')
         password2 = self.cleaned_data.get('password2')
         if password is not None and password2 is not None and password != password2:
-            print(password)
-            print(password2)
             self.add_error('password', 'Las contraseñas ingresadas no coinciden')
             self.add_error('password2', '')
 
@@ -98,7 +94,8 @@ class UsuarioForm(ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data.get('password'))
+        if self.instance.pk is None:
+            user.set_password(self.cleaned_data.get('password'))
         if commit:
             user.save()
         return user
@@ -110,9 +107,27 @@ class ReservaForm(ModelForm):
         self.user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
 
+        if not self.user.esAdmin:
+            self.fields['solicitante'].widget = HiddenInput()
+            self.fields['solicitante'].required = False
+            self.fields['estado'].widget = HiddenInput()
+            self.fields['estado'].required = False
+
     class Meta:
         model = Reserva
-        fields = ['articulo', 'espacio', 'fechaReserva', 'horaInicio', 'horaTermino', 'estado']
+        fields = ['articulo', 'espacio', 'solicitante', 'fechaReserva', 'horaInicio', 'horaTermino', 'estado']
+
+        widgets = {
+            'fechaReserva': DatePickerInput,
+            'horaInicio': TimePickerInput,
+            'horaTermino': TimePickerInput,
+        }
+
+        help_texts = {
+            'fechaReserva': 'mm/dd/aaaa',
+            'horaInicio': 'hh:mm',
+            'horaTermino': 'hh:mm',
+        }
 
     def clean_articulo(self):
         articulo = self.cleaned_data.get('articulo')
@@ -134,6 +149,12 @@ class ReservaForm(ModelForm):
         horaTermino = self.cleaned_data.get('horaTermino')
         return horaTermino
 
+    def clean_solicitante(self):
+        solicitante = self.cleaned_data.get('solicitante')
+        if solicitante is None:
+            solicitante = self.user
+        return solicitante
+
 
 class PrestamoForm(ModelForm):
 
@@ -144,6 +165,18 @@ class PrestamoForm(ModelForm):
     class Meta:
         model = Prestamo
         fields = ['articulo', 'espacio', 'fechaPrestamo', 'solicitante', 'horaInicio', 'horaTermino', 'estado']
+
+        widgets = {
+            'fechaPrestamo': DatePickerInput,
+            'horaInicio': TimePickerInput,
+            'horaTermino': TimePickerInput,
+        }
+
+        help_texts = {
+            'fechaPrestamo': 'mm/dd/aaaa',
+            'horaInicio': 'hh:mm',
+            'horaTermino': 'hh:mm',
+        }
 
     def clean_articulo(self):
         articulo = self.cleaned_data.get('articulo')

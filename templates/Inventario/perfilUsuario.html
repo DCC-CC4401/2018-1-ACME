@@ -53,16 +53,16 @@
                                             {% endif %}"
                                    id="list-reserva{{ reserva.id }}-list" data-toggle="list" role="tab"
                                    aria-controls="reserva{{ reserva.id }}">
-                                    {% if reserva.ultimoEstado.estado == PROCESO %}
+                                    {% if reserva.estado == PENDIENTE %}
                                         <input type="checkbox" name="lista" value="{{ reserva.id }}">
                                     {% endif %}
-                                    {{ reserva|nombreItem }}
+                                    {{ reserva }}
                                     <span class="badge
-                                            {% if reserva.ultimoEstado.estado == PROCESO %} badge-info
-                                            {% elif reserva.ultimoEstado.estado == ACEPTADO %} badge-success
-                                            {% elif reserva.ultimoEstado.estado == RECHAZADO %} badge-danger
+                                            {% if reserva.estado == PENDIENTE %} badge-info
+                                            {% elif reserva.estado == ENTREGADO %} badge-success
+                                            {% elif reserva.estado == RECHAZADO %} badge-danger
                                             {% endif %}">
-                                        <i class="fas fa-angle-left"></i> {{ reserva.ultimoEstado.get_estado_display }}
+                                        <i class="fas fa-angle-left"></i> {{ reserva.get_estado_display }}
                                         </span>
                                 </a>
                             {% endfor %}
@@ -96,7 +96,7 @@
                                             {% endif %}"
                                id="list-prestamo{{ prestamo.id }}-list" data-toggle="list" role="tab"
                                aria-controls="prestamo{{ prestamo.id }}">
-                                {{ prestamo|nombreItem }}
+                                {{ prestamo }}
                             </a>
                         {% endfor %}
                     </div>
@@ -115,6 +115,5 @@
             </div>
         </div>
     </div>
-
     <script src="{% static 'Inventario/js/perfilUsuario.js' %}"></script>
 {% endblock %}

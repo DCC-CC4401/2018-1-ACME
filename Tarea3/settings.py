@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'Inventario.apps.InventarioConfig',
     'customAuth',
     'widget_tweaks',
+    'bootstrap_datepicker_plus',
 ]
 
 MIDDLEWARE = [

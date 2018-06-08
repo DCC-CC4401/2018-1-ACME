@@ -45,15 +45,12 @@
                     {{ user.username }}<br>
                     {{ user.email }}
                 </li>
-                {% if not user.esAdmin %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'Inventario:perfilUsuario' user.id %}">Mi Perfil</a>
-                    </li>
-                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'Inventario:perfilUsuario' user.id %}">Mi Perfil</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'customAuth:logout' %}">Logout</a>
                 </li>
-
             {% endif %}
         </ul>
     </div>
