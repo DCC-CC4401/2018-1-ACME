@@ -2,13 +2,13 @@
 from datetime import timedelta, date
 
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from Inventario.forms import UsuarioForm, ReservaForm, PrestamoForm, ArticuloForm, EspacioForm
+from Inventario.forms import UsuarioForm, ReservaForm, PrestamoForm, ArticuloForm, EspacioForm, CustomPasswordChangeForm
 from Inventario.models import Reserva, Prestamo, Articulo, Espacio, Usuario, PENDIENTE, ENTREGADO, RECHAZADO
 
 
@@ -102,17 +102,6 @@ def fichaArticulo(request, articuloId):
     return render(request, 'Inventario/fichaArticulo.html', context)
 
 
-def upload_img(request):
-    if request.method == 'POST':
-        form = ImageUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            m = Articulo.objects.get(pk=course_id)
-            m.foto = form.cleaned_data['image']
-            m.save()
-            return HttpResponse('image upload success')
-    return HttpResponseForbidden('allowed only via POST')
-
-
 def fichaReserva(request, reservaId):
     return None
 
@@ -123,6 +112,22 @@ def fichaPrestamo(request, prestamoId):
 
 def fichaEspacio(request, espacioId):
     return None
+
+
+def password_change(request):
+    if not request.user.is_authenticated:
+        return redirect('Inventario:index')
+    form = CustomPasswordChangeForm(user=request.user, data=request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, form.user)
+            messages.success(request, 'La contraseña fue cambiada.')
+            return redirect('Inventario:index')
+        else:
+            messages.error(request, 'Hubo un error en el formulario, la contraseña no fue cambiada.')
+
+    return render(request, 'Inventario/password_change.html', {'form': form})
 
 
 class UsuarioCreate(UserPassesTestMixin, CreateView):
@@ -207,11 +212,14 @@ class ReservaCreate(LoginRequiredMixin, CreateView):
         return kwargs
 
 
-class ReservaUpdate(LoginRequiredMixin, UpdateView):
+class ReservaUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Reserva
     form_class = ReservaForm
     success_url = reverse_lazy('Inventario:index')
     redirect_field_name = None
+
+    def test_func(self):
+        return self.request.user.esAdmin
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo un error en el formulario, la reserva no fue modificada.')

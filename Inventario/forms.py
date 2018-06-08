@@ -1,6 +1,7 @@
 import re
 
 from bootstrap_datepicker_plus import DatePickerInput, TimePickerInput
+from django.contrib.auth.forms import PasswordChangeForm
 from django.forms import ModelForm, PasswordInput, Textarea, CharField, ValidationError, HiddenInput
 
 from Inventario.widgets import SwitchWidget
@@ -249,3 +250,38 @@ class EspacioForm(ModelForm):
     def clean_capacidad(self):
         capacidad = self.cleaned_data.get('capacidad')
         return capacidad
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    error_messages = {'password_incorrect': 'La contraseña ingresada es incorrecta',
+                      'password_mismatch': 'Las contraseñas ingresadas no coinciden'}
+    old_password = CharField(
+        required=True,
+        label='Contraseña antigua',
+        widget=PasswordInput,
+        error_messages={
+            'required': 'Ingrese la contraseña antigua',
+        },
+    )
+    new_password1 = CharField(
+        required=True,
+        label='Nueva Contraseña',
+        widget=PasswordInput,
+        error_messages={
+            'required': 'Ingrese la nueva contraseña',
+        },
+    )
+    new_password2 = CharField(
+        required=True,
+        label='Repita la nueva Contraseña',
+        widget=PasswordInput,
+        error_messages={
+            'required': 'Ingrese la nueva contraseña',
+        },
+    )
+
+    def clean_new_password1(self):
+        password = self.cleaned_data.get('new_password1')
+        if len(password) < 8:
+            raise ValidationError('El largo de la contraseña debe ser mayor o igual a 8')
+        return password

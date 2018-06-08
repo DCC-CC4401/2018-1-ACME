@@ -64,7 +64,7 @@ class Usuario(AbstractUser):
         return 'U' + str(self.id)
 
     def __str__(self):
-        return self.nombre + ' ' + self.apellido + ' ' + self.username + ' [' + self.get_code() + ']'
+        return self.nombre + ' ' + self.apellido + ' ' + self.email + ' [' + self.get_code() + ']'
 
 
 class Articulo(models.Model):
@@ -110,9 +110,9 @@ class Reserva(models.Model):
 
     def __str__(self):
         if self.articulo is not None:
-            return '[' + self.get_code() + '] (' + str(self.articulo) + ')'
+            return 'Reserva (' + str(self.articulo) + ')' + ' [' + self.get_code() + ']'
         else:
-            return '[' + self.get_code() + '] (' + str(self.espacio) + ')'
+            return 'Reserva (' + str(self.espacio) + ')' + ' [' + self.get_code() + ']'
 
 
 class Prestamo(models.Model):
@@ -129,9 +129,9 @@ class Prestamo(models.Model):
 
     def __str__(self):
         if self.articulo is not None:
-            return '[' + self.get_code() + '] (' + str(self.articulo) + ')'
+            return 'Préstamo (' + str(self.articulo) + ')' + ' [' + self.get_code() + ']'
         else:
-            return '[' + self.get_code() + '] (' + str(self.espacio) + ')'
+            return 'Préstamo (' + str(self.espacio) + ')' + ' [' + self.get_code() + ']'
 
 
 class EstadoReserva(models.Model):
