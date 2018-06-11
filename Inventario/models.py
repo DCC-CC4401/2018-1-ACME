@@ -84,7 +84,8 @@ class Articulo(models.Model):
 class Espacio(models.Model):
     nombre = models.CharField(max_length=50, verbose_name='Nombre')
     descripcion = models.CharField(max_length=500, verbose_name='Descripción')
-    foto = models.ImageField(null=True, verbose_name='Foto')
+    foto = models.ImageField(upload_to='static/imgespacio/', default='imgespacio/None/no-img.jpg',
+                             verbose_name='Foto')
     capacidad = models.PositiveIntegerField(default=0, verbose_name='Capacidad')
     estado = models.CharField(max_length=1, choices=ESTADOS_ESPACIO, default=DISPONIBLE, verbose_name='Estado')
 
@@ -116,22 +117,15 @@ class Reserva(models.Model):
 
 
 class Prestamo(models.Model):
-    horaInicio = models.TimeField(default=get_time, verbose_name='Hora de Inicio')
-    horaTermino = models.TimeField(default=get_time, verbose_name='Hora de Término')
-    solicitante = models.ForeignKey(Usuario, on_delete=models.CASCADE, verbose_name='Solicitante')
-    articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Artículo')
-    espacio = models.ForeignKey(Espacio, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Espacio')
-    fechaPrestamo = models.DateField(default=get_date, verbose_name='Fecha de Préstamo')
+    reserva = models.OneToOneField(Reserva, on_delete=models.CASCADE, verbose_name='Reserva')
+    fechaPrestamo = models.DateField(default=get_date, verbose_name='Fecha de Creación')
     estado = models.CharField(max_length=1, choices=ESTADOS_PRESTAMO, default=PENDIENTE, verbose_name='Estado')
 
     def get_code(self):
         return 'P' + str(self.id)
 
     def __str__(self):
-        if self.articulo is not None:
-            return 'Préstamo (' + str(self.articulo) + ')' + ' [' + self.get_code() + ']'
-        else:
-            return 'Préstamo (' + str(self.espacio) + ')' + ' [' + self.get_code() + ']'
+        return 'Préstamo (' + str(self.reserva) + ')' + ' [' + self.get_code() + ']'
 
 
 class EstadoReserva(models.Model):

@@ -63,7 +63,7 @@
                                             {% elif reserva.estado == RECHAZADO %} badge-danger
                                             {% endif %}">
                                         <i class="fas fa-angle-left"></i> {{ reserva.get_estado_display }}
-                                        </span>
+                                    </span>
                                 </a>
                             {% endfor %}
                         </div>
@@ -97,6 +97,13 @@
                                id="list-prestamo{{ prestamo.id }}-list" data-toggle="list" role="tab"
                                aria-controls="prestamo{{ prestamo.id }}">
                                 {{ prestamo }}
+                                <span class="badge
+                                            {% if prestamo.estado == PENDIENTE %} badge-info
+                                            {% elif prestamo.estado == RECIBIDO %} badge-success
+                                            {% elif prestamo.estado == PERDIDO %} badge-danger
+                                            {% endif %}">
+                                        <i class="fas fa-angle-left"></i> {{ prestamo.get_estado_display }}
+                                </span>
                             </a>
                         {% endfor %}
                     </div>

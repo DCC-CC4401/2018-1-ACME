@@ -1,11 +1,13 @@
 import re
+from datetime import datetime, timedelta, time
 
 from bootstrap_datepicker_plus import DatePickerInput, TimePickerInput
 from django.contrib.auth.forms import PasswordChangeForm
 from django.forms import ModelForm, PasswordInput, Textarea, CharField, ValidationError, HiddenInput
+from django.utils import timezone
 
 from Inventario.widgets import SwitchWidget
-from .models import Usuario, Reserva, Prestamo, Articulo, Espacio
+from .models import Usuario, Reserva, Prestamo, Articulo, Espacio, PENDIENTE, DISPONIBLE
 
 
 class UsuarioForm(ModelForm):
@@ -126,35 +128,57 @@ class ReservaForm(ModelForm):
 
         help_texts = {
             'fechaReserva': 'mm/dd/aaaa',
-            'horaInicio': 'hh:mm',
-            'horaTermino': 'hh:mm',
+            'horaInicio': 'La hora de inicio debe ser mayor o igual a las 9:00',
+            'horaTermino': 'La hora de término debe ser menor o igual a las 18:00',
         }
-
-    def clean_articulo(self):
-        articulo = self.cleaned_data.get('articulo')
-        return articulo
-
-    def clean_espacio(self):
-        espacio = self.cleaned_data.get('espacio')
-        return espacio
-
-    def clean_fechaReserva(self):
-        fechaReserva = self.cleaned_data.get('fechaReserva')
-        return fechaReserva
-
-    def clean_horaInicio(self):
-        horaInicio = self.cleaned_data.get('horaInicio')
-        return horaInicio
-
-    def clean_horaTermino(self):
-        horaTermino = self.cleaned_data.get('horaTermino')
-        return horaTermino
 
     def clean_solicitante(self):
         solicitante = self.cleaned_data.get('solicitante')
-        if solicitante is None:
+        if solicitante is None or not self.user.esAdmin:
             solicitante = self.user
         return solicitante
+
+    def clean_estado(self):
+        estado = self.cleaned_data.get('estado')
+        if estado is None or not self.user.esAdmin:
+            estado = PENDIENTE
+            if self.instance.pk is not None:
+                estado = self.instance.estado
+        return estado
+
+    def clean(self):
+        super().clean()
+        articulo = self.cleaned_data.get('articulo')
+        espacio = self.cleaned_data.get('espacio')
+        fechaReserva = self.cleaned_data.get('fechaReserva')
+        horaInicio = self.cleaned_data.get('horaInicio')
+        horaTermino = self.cleaned_data.get('horaTermino')
+        if articulo is None and espacio is None:
+            self.add_error('articulo', 'Porfavor escoge un artículo o un espacio')
+            self.add_error('espacio', 'Porfavor escoge un artículo o un espacio')
+        if articulo is not None and espacio is not None:
+            self.add_error('articulo', 'Solo puedes escoger un artículo o un espacio')
+            self.add_error('espacio', 'Solo puedes escoger un artículo o un espacio')
+        if self.instance.pk is None and datetime.combine(fechaReserva, horaInicio) < datetime.now() + timedelta(
+                minutes=55):
+            self.add_error('fechaReserva',
+                           'Solo puedes reservar con 1 hora de anticipación con el inicio de fecha/hora de la reserva')
+        if horaInicio > horaTermino:
+            self.add_error('horaTermino', 'La hora de término debe ser mayor a la hora de inicio')
+        if horaInicio < time(hour=9):
+            self.add_error('horaInicio', 'La hora de inicio debe ser mayor o igual a las 9:00')
+        if horaTermino > time(hour=18):
+            self.add_error('horaTermino', 'La hora de término debe ser menor o igual a las 18:00')
+
+        return self.cleaned_data
+
+    def save(self, commit=True):
+        reserva = super().save(commit=False)
+        if self.instance.pk is None:
+            reserva.fechaCreacion = timezone.now()
+        if commit:
+            reserva.save()
+        return reserva
 
 
 class PrestamoForm(ModelForm):
@@ -165,43 +189,33 @@ class PrestamoForm(ModelForm):
 
     class Meta:
         model = Prestamo
-        fields = ['articulo', 'espacio', 'fechaPrestamo', 'solicitante', 'horaInicio', 'horaTermino', 'estado']
+        fields = ['reserva', 'estado']
 
-        widgets = {
-            'fechaPrestamo': DatePickerInput,
-            'horaInicio': TimePickerInput,
-            'horaTermino': TimePickerInput,
+        error_messages = {
+            'reserva': {
+                'required': 'Porfavor ingresa una reserva'
+            }
         }
 
-        help_texts = {
-            'fechaPrestamo': 'mm/dd/aaaa',
-            'horaInicio': 'hh:mm',
-            'horaTermino': 'hh:mm',
-        }
+    def clean(self):
+        super().clean()
+        reserva = self.cleaned_data.get('reserva')
+        if reserva is not None:
+            articulo = reserva.articulo
+            espacio = reserva.espacio
+            if articulo is not None and articulo.estado != DISPONIBLE:
+                self.add_error('reserva', 'El artículo no está disponible para prestar')
+            if espacio is not None and espacio.estado != DISPONIBLE:
+                self.add_error('reserva', 'El espacio no está disponible para prestar')
+        return self.cleaned_data
 
-    def clean_articulo(self):
-        articulo = self.cleaned_data.get('articulo')
-        return articulo
-
-    def clean_espacio(self):
-        espacio = self.cleaned_data.get('espacio')
-        return espacio
-
-    def clean_fechaPrestamo(self):
-        fechaPrestamo = self.cleaned_data.get('fechaPrestamo')
-        return fechaPrestamo
-
-    def clean_solicitante(self):
-        solicitante = self.cleaned_data.get('solicitante')
-        return solicitante
-
-    def clean_horaInicio(self):
-        horaInicio = self.cleaned_data.get('horaInicio')
-        return horaInicio
-
-    def clean_horaTermino(self):
-        horaTermino = self.cleaned_data.get('horaTermino')
-        return horaTermino
+    def save(self, commit=True):
+        prestamo = super().save(commit=False)
+        if self.instance.pk is None:
+            prestamo.fechaCreacion = timezone.now()
+        if commit:
+            prestamo.save()
+        return prestamo
 
 
 class ArticuloForm(ModelForm):
@@ -211,6 +225,10 @@ class ArticuloForm(ModelForm):
 
         widgets = {
             'descripcion': Textarea,
+        }
+
+        help_texts = {
+            'foto': 'Opcional'
         }
 
     def clean_nombre(self):
@@ -233,6 +251,10 @@ class EspacioForm(ModelForm):
 
         widgets = {
             'descripcion': Textarea,
+        }
+
+        help_texts = {
+            'foto': 'Opcional'
         }
 
     def clean_nombre(self):

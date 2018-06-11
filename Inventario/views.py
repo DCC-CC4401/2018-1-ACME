@@ -9,7 +9,8 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from Inventario.forms import UsuarioForm, ReservaForm, PrestamoForm, ArticuloForm, EspacioForm, CustomPasswordChangeForm
-from Inventario.models import Reserva, Prestamo, Articulo, Espacio, Usuario, PENDIENTE, ENTREGADO, RECHAZADO
+from Inventario.models import Reserva, Prestamo, Articulo, Espacio, Usuario, PENDIENTE, ENTREGADO, RECHAZADO, RECIBIDO, \
+    PERDIDO
 
 
 def index(request):
@@ -82,12 +83,17 @@ def perfilUsuario(request, usuarioId):
             context['tipoAlerta'] = 'success'
 
     reservas = Reserva.objects.filter(solicitante=request.user)
-    prestamos = Prestamo.objects.filter(solicitante=request.user)
-    context['reservas'] = reservas
-    context['prestamos'] = prestamos
-    context['PENDIENTE'] = PENDIENTE
-    context['ENTREGADO'] = ENTREGADO
-    context['RECHAZADO'] = RECHAZADO
+    prestamos = Prestamo.objects.filter(reserva__solicitante=request.user)
+
+    context = {
+        'reservas': reservas,
+        'prestamos': prestamos,
+        'PENDIENTE': PENDIENTE,
+        'ENTREGADO': ENTREGADO,
+        'RECHAZADO': RECHAZADO,
+        'RECIBIDO': RECIBIDO,
+        'PERDIDO': PERDIDO,
+    }
     return render(request, 'Inventario/perfilUsuario.html', context)
 
 
