@@ -53,6 +53,13 @@ def get_date():
     return datetime.now().date()
 
 
+def in_estados(estados, check):
+    for estado, _ in estados:
+        if estado == check:
+            return True
+    return False
+
+
 class Usuario(AbstractUser):
     nombre = models.CharField(max_length=30, verbose_name='Nombre')
     apellido = models.CharField(max_length=30, verbose_name='Apellido')
@@ -111,9 +118,9 @@ class Reserva(models.Model):
 
     def __str__(self):
         if self.articulo is not None:
-            return 'Reserva (' + str(self.articulo) + ')' + ' [' + self.get_code() + ']'
+            return self.solicitante.email + ' reserva ' + self.articulo.nombre + ' [' + self.get_code() + ']'
         else:
-            return 'Reserva (' + str(self.espacio) + ')' + ' [' + self.get_code() + ']'
+            return self.solicitante.email + ' reserva ' + self.espacio.nombre + ' [' + self.get_code() + ']'
 
 
 class Prestamo(models.Model):

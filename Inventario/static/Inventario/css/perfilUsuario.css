@@ -1,0 +1,10 @@
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: purple;
+}
+
+.bottom-control-buttons {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    z-index: 998;
+}

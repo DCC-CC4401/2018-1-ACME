@@ -13,11 +13,11 @@
 {% block content %}
 
     <div class="row justify-content-center align-items-center">
-        <div class="col-5">
+        <div class="col-6">
             <a href="{% url 'Inventario:index' %}" class="btn btn-info btn-lg btn-block" role="button">Reserva Tu
                 Espacio</a>
         </div>
-        <div class="col-5">
+        <div class="col-6">
             <a href="{% url 'Inventario:index' %}" class="btn btn-info btn-lg btn-block" role="button">Pide Tu
                 Artículo</a>
         </div>
@@ -33,39 +33,103 @@
                    aria-controls="pills-prestamos" aria-selected="false">Préstamos</a>
             </li>
         </ul>
-        <input type="submit" form="form" value="Eliminar Seleccionados" class="col-2 btn btn-danger">
     </div>
-
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="pills-reservas" role="tabpanel"
              aria-labelledby="pills-reservas-tab">
             <div class="row justify-content-center">
-                <div class="col-4">
-                    <form id="form" action="{% url 'Inventario:perfilUsuario' user.id %}" method="post">
+                <div class="col-5">
+                    <form id="form-reservas" method="post">
                         {% csrf_token %}
-                        <input type="hidden" name="tipo" value="reservas">
+                        <input type="hidden" name="next" value="{% url 'Inventario:perfilUsuario' usuarioId %}">
                         <div class="list-group" id="list-tab-reservas" role="tablist">
                             {% for reserva in reservas %}
                                 <a href="#list-reserva{{ reserva.id }}"
-                                   class="list-group-item list-group-item-action
+                                   class="d-flex list-group-item list-group-item-action
                                             {% if forloop.counter == 1 %}
                                                 active
                                             {% endif %}"
                                    id="list-reserva{{ reserva.id }}-list" data-toggle="list" role="tab"
                                    aria-controls="reserva{{ reserva.id }}">
-                                    {% if reserva.estado == PENDIENTE %}
-                                        <input type="checkbox" name="lista" value="{{ reserva.id }}">
-                                    {% endif %}
-                                    {{ reserva }}
-                                    <span class="badge
-                                            {% if reserva.estado == PENDIENTE %} badge-info
-                                            {% elif reserva.estado == ENTREGADO %} badge-success
-                                            {% elif reserva.estado == RECHAZADO %} badge-danger
-                                            {% endif %}">
-                                        <i class="fas fa-angle-left"></i> {{ reserva.get_estado_display }}
-                                    </span>
+                                    <div class="col-1">
+                                        {% if user.esAdmin or reserva.estado == PENDIENTE %}
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="reservas" type="checkbox"
+                                                       class="custom-control-input checkbox"
+                                                       id="checkbox-reserva-{{ reserva.id }}" value="{{ reserva.id }}"/>
+                                                <label class="custom-control-label float-left"
+                                                       for="checkbox-reserva-{{ reserva.id }}"></label>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-7">{{ reserva.articulo.nombre }}</div>
+                                    <div class="col-2">[{{ reserva.get_code }}]</div>
+                                    <div class="col-2">
+                                        <div class="float-right">
+                                            <span class="badge
+                                                {% if reserva.estado == PENDIENTE %} badge-info
+                                                {% elif reserva.estado == ENTREGADO %} badge-success
+                                                {% elif reserva.estado == RECHAZADO %} badge-danger
+                                                {% endif %}">
+                                                <i class="fas fa-angle-left"></i> {{ reserva.get_estado_display }}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </a>
                             {% endfor %}
+                        </div>
+                        <div class="modal fade" id="reservas-estados-modal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Cambiar Reservas Seleccionadas</h5>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Quieres cambiar el estado de las reservas seleccionadas?</p>
+                                        <label for="id-reservas-estados">Estado:</label>
+                                        <select name="estado" id="id-reservas-estados">
+                                            {% for codigo, nombre in ESTADOS_RESERVA %}
+                                                <option value="{{ codigo }}" {% if forloop.counter == 1 %}
+                                                        selected="" {% endif %}>{{ nombre }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar
+                                        </button>
+                                        <button type="submit" class="btn btn-primary"
+                                                formaction="{% url 'Inventario:cambiarEstadoListaReservas' %}">Guardar
+                                            Cambios
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="reservas-eliminar-modal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Eliminar Reservas Seleccionadas</h5>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Quieres eliminar las reservas seleccionadas?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar
+                                        </button>
+                                        <button type="submit" class="btn btn-danger"
+                                                formaction="{% url 'Inventario:eliminarListaReservas' %}">Eliminar
+                                            Seleccionados
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -81,32 +145,116 @@
                     </div>
                 </div>
             </div>
+            <div class="bottom-control-buttons">
+                {% if user.esAdmin %}
+                    <button class="btn btn-info" data-toggle="modal" data-target="#reservas-estados-modal">Cambiar
+                        estado de seleccionados
+                    </button>
+                {% endif %}
+                <button class="btn btn-danger" data-toggle="modal" data-target="#reservas-eliminar-modal">Eliminar
+                    seleccionados
+                </button>
+            </div>
         </div>
 
         <div class="tab-pane fade" id="pills-prestamos" role="tabpanel"
              aria-labelledby="pills-prestamos-tab">
             <div class="row justify-content-center">
-                <div class="col-4">
-                    <div class="list-group" id="list-tab-prestamos" role="tablist">
-                        {% for prestamo in prestamos %}
-                            <a href="#list-prestamo{{ prestamo.id }}"
-                               class="list-group-item list-group-item-action
+                <div class="col-5">
+                    <form id="form-prestamos" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'Inventario:perfilUsuario' usuarioId %}">
+                        <div class="list-group" id="list-tab-prestamos" role="tablist">
+                            {% for prestamo in prestamos %}
+                                <a href="#list-prestamo{{ prestamo.id }}"
+                                   class="d-flex list-group-item list-group-item-action
                                             {% if forloop.counter == 1 %}
                                                 active
                                             {% endif %}"
-                               id="list-prestamo{{ prestamo.id }}-list" data-toggle="list" role="tab"
-                               aria-controls="prestamo{{ prestamo.id }}">
-                                {{ prestamo }}
-                                <span class="badge
+                                   id="list-prestamo{{ prestamo.id }}-list" data-toggle="list" role="tab"
+                                   aria-controls="prestamo{{ prestamo.id }}">
+                                    <div class="col-1">
+                                        {% if user.esAdmin or prestamo.estado == PENDIENTE %}
+                                            <div class="custom-control custom-checkbox">
+                                                <input name="prestamos" type="checkbox"
+                                                       class="custom-control-input checkbox"
+                                                       id="checkbox-prestamo-{{ prestamo.id }}"
+                                                       value="{{ prestamo.id }}"/>
+                                                <label class="float-left custom-control-label"
+                                                       for="checkbox-prestamo-{{ prestamo.id }}"></label>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-7">{{ prestamo.reserva.articulo.nombre }}</div>
+                                    <div class="col-2">[{{ prestamo.get_code }}]</div>
+                                    <div class="col-2">
+                                        <div class="float-right">
+                                            <span class="badge
                                             {% if prestamo.estado == PENDIENTE %} badge-info
                                             {% elif prestamo.estado == RECIBIDO %} badge-success
                                             {% elif prestamo.estado == PERDIDO %} badge-danger
                                             {% endif %}">
-                                        <i class="fas fa-angle-left"></i> {{ prestamo.get_estado_display }}
-                                </span>
-                            </a>
-                        {% endfor %}
-                    </div>
+                                            <i class="fas fa-angle-left"></i> {{ prestamo.get_estado_display }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                        <div class="modal fade" id="prestamos-estados-modal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Cambiar Préstamos Seleccionados</h5>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Quieres cambiar el estado de los préstamos seleccionados?</p>
+                                        <label for="id-prestamos-estados">Estado:</label>
+                                        <select name="estado" id="id-prestamos-estados">
+                                            {% for codigo, nombre in ESTADOS_PRESTAMO %}
+                                                <option value="{{ codigo }}" {% if forloop.counter == 1 %}
+                                                        selected="" {% endif %}>{{ nombre }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar
+                                        </button>
+                                        <button type="submit" class="btn btn-primary"
+                                                formaction="{% url 'Inventario:cambiarEstadoListaPrestamos' %}">Guardar
+                                            Cambios
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="prestamos-eliminar-modal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Eliminar Préstamos Seleccionados</h5>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>¿Quieres eliminar los préstamos seleccionados?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar
+                                        </button>
+                                        <button type="submit" class="btn btn-danger"
+                                                formaction="{% url 'Inventario:eliminarListaPrestamos' %}">Eliminar
+                                            Seleccionados
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="col-6">
                     <div class="tab-content" id="nav-prestamos-tabContent">
@@ -119,6 +267,16 @@
                         {% endfor %}
                     </div>
                 </div>
+            </div>
+            <div class="bottom-control-buttons">
+                {% if user.esAdmin %}
+                    <button class="btn btn-info" data-toggle="modal" data-target="#prestamos-estados-modal">Cambiar
+                        estado de seleccionados
+                    </button>
+                    <button class="btn btn-danger" data-toggle="modal" data-target="#prestamos-eliminar-modal">Eliminar
+                        seleccionados
+                    </button>
+                {% endif %}
             </div>
         </div>
     </div>

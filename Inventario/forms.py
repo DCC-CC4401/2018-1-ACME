@@ -153,6 +153,7 @@ class ReservaForm(ModelForm):
         fechaReserva = self.cleaned_data.get('fechaReserva')
         horaInicio = self.cleaned_data.get('horaInicio')
         horaTermino = self.cleaned_data.get('horaTermino')
+        print(self.cleaned_data)
         if articulo is None and espacio is None:
             self.add_error('articulo', 'Porfavor escoge un artículo o un espacio')
             self.add_error('espacio', 'Porfavor escoge un artículo o un espacio')
@@ -193,7 +194,8 @@ class PrestamoForm(ModelForm):
 
         error_messages = {
             'reserva': {
-                'required': 'Porfavor ingresa una reserva'
+                'required': 'Porfavor ingresa una reserva',
+                'unique': 'Ya existe un préstamo asociado a esta reserva'
             }
         }
 

@@ -4,13 +4,15 @@ from datetime import timedelta, date
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.forms import model_to_dict
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from Inventario.forms import UsuarioForm, ReservaForm, PrestamoForm, ArticuloForm, EspacioForm, CustomPasswordChangeForm
 from Inventario.models import Reserva, Prestamo, Articulo, Espacio, Usuario, PENDIENTE, ENTREGADO, RECHAZADO, RECIBIDO, \
-    PERDIDO
+    PERDIDO, in_estados, ESTADOS_RESERVA, ESTADOS_PRESTAMO
 
 
 def index(request):
@@ -58,43 +60,27 @@ def perfilUsuario(request, usuarioId):
         return redirect('Inventario:index')
 
     try:
-        Usuario.objects.get(id=usuarioId)
+        usuario = Usuario.objects.get(id=usuarioId)
+
+        reservas = Reserva.objects.filter(solicitante=usuario)
+        prestamos = Prestamo.objects.filter(reserva__solicitante=usuario)
+
+        context = {
+            'reservas': reservas,
+            'prestamos': prestamos,
+            'usuarioId': usuarioId,
+            'PENDIENTE': PENDIENTE,
+            'ENTREGADO': ENTREGADO,
+            'RECHAZADO': RECHAZADO,
+            'RECIBIDO': RECIBIDO,
+            'PERDIDO': PERDIDO,
+            'ESTADOS_RESERVA': ESTADOS_RESERVA,
+            'ESTADOS_PRESTAMO': ESTADOS_PRESTAMO,
+        }
+        return render(request, 'Inventario/perfilUsuario.html', context)
+
     except Usuario.DoesNotExist:
         return redirect('Inventario:index')
-
-    context = {}
-
-    if request.method == 'POST':
-        count = 0
-        list = request.POST.getlist('lista')
-        for id in list:
-            try:
-                Reserva.objects.get(id=id, solicitante=request.user).delete()
-                count += 1
-            except Reserva.DoesNotExist:
-                pass
-
-        if count != len(list):
-            context['alerta'] = 'Hubo un problema con la solicitud, se eliminaron {0} de {1} Reservas'.format(
-                str(count), str(len(list)))
-            context['tipoAlerta'] = 'error'
-        else:
-            context['alerta'] = 'Se eliminaron {0} Reservas'.format(str(count))
-            context['tipoAlerta'] = 'success'
-
-    reservas = Reserva.objects.filter(solicitante=request.user)
-    prestamos = Prestamo.objects.filter(reserva__solicitante=request.user)
-
-    context = {
-        'reservas': reservas,
-        'prestamos': prestamos,
-        'PENDIENTE': PENDIENTE,
-        'ENTREGADO': ENTREGADO,
-        'RECHAZADO': RECHAZADO,
-        'RECIBIDO': RECIBIDO,
-        'PERDIDO': PERDIDO,
-    }
-    return render(request, 'Inventario/perfilUsuario.html', context)
 
 
 def fichaArticulo(request, articuloId):
@@ -109,15 +95,127 @@ def fichaArticulo(request, articuloId):
 
 
 def fichaReserva(request, reservaId):
-    return None
+    return HttpResponse('Ficha reserva ' + str(reservaId))
 
 
 def fichaPrestamo(request, prestamoId):
-    return None
+    return HttpResponse('Ficha prestamo ' + str(prestamoId))
 
 
 def fichaEspacio(request, espacioId):
-    return None
+    return HttpResponse('Ficha espacio ' + str(espacioId))
+
+
+def eliminarListaReservas(request):
+    next = request.POST.get('next', reverse('Inventario:index'))
+    if request.method == 'POST':
+        is_valid = request.user.is_authenticated
+        reservas = request.POST.getlist('reservas')
+        if len(reservas) != len(set(reservas)):
+            is_valid = False
+        for reservaId in reservas:
+            if not is_valid:
+                break
+            reserva = Reserva.objects.filter(id=reservaId).first()
+            if reserva is None or (not request.user.esAdmin and reserva.solicitante != request.user):
+                is_valid = False
+
+        if is_valid:
+            for reservaId in reservas:
+                reserva = Reserva.objects.get(id=reservaId)
+                reserva.delete()
+            messages.success(request, 'Se eliminaron ' + str(len(reservas)) + ' reservas')
+        else:
+            messages.error(request, 'Hubo un error, no se eliminaron las reservas seleccionadas')
+
+    return redirect(next)
+
+
+def eliminarListaPrestamos(request):
+    next = request.POST.get('next', reverse('Inventario:index'))
+    if request.method == 'POST':
+        is_valid = request.user.is_authenticated and request.user.esAdmin
+        prestamos = request.POST.getlist('prestamos')
+        if len(prestamos) != len(set(prestamos)):
+            is_valid = False
+        for prestamoId in prestamos:
+            if not is_valid:
+                break
+            prestamo = Prestamo.objects.filter(id=prestamoId).first()
+            if prestamo is None:
+                is_valid = False
+
+        if is_valid:
+            for prestamoId in prestamos:
+                prestamo = Prestamo.objects.get(id=prestamoId)
+                prestamo.delete()
+            messages.success(request, 'Se eliminaron ' + str(len(prestamos)) + ' préstamos')
+        else:
+            messages.error(request, 'Hubo un error, no se eliminaron las préstamos seleccionados')
+
+    return redirect(next)
+
+
+def cambiarEstadoListaReservas(request):
+    next = request.POST.get('next', reverse('Inventario:index'))
+    if request.method == 'POST':
+        is_valid = request.user.is_authenticated and request.user.esAdmin and in_estados(ESTADOS_RESERVA,
+                                                                                         request.POST.get('estado'))
+        reservas = request.POST.getlist('reservas')
+        if len(reservas) != len(set(reservas)):
+            is_valid = False
+
+        for reservaId in reservas:
+            if not is_valid:
+                break
+            reserva = Reserva.objects.filter(id=reservaId).first()
+            if reserva is None:
+                is_valid = False
+
+        if is_valid:
+            for reservaId in reservas:
+                reserva = Reserva.objects.get(id=reservaId)
+                data = model_to_dict(reserva)
+                data['estado'] = request.POST.get('estado')
+                form = ReservaForm(data=data, instance=reserva, user=request.user)
+                if form.is_valid():
+                    form.save()
+            messages.success(request, 'Se cambiaron ' + str(len(reservas)) + ' reservas')
+        else:
+            messages.error(request, 'Hubo un error, no se cambió el estado de las reservas seleccionadas')
+
+    return redirect(next)
+
+
+def cambiarEstadoListaPrestamos(request):
+    next = request.POST.get('next', reverse('Inventario:index'))
+    if request.method == 'POST':
+        is_valid = request.user.is_authenticated and request.user.esAdmin and in_estados(ESTADOS_PRESTAMO,
+                                                                                         request.POST.get('estado'))
+        prestamos = request.POST.getlist('prestamos')
+        if len(prestamos) != len(set(prestamos)):
+            is_valid = False
+
+        for prestamoId in prestamos:
+            if not is_valid:
+                break
+            prestamo = Prestamo.objects.filter(id=prestamoId).first()
+            if prestamo is None:
+                is_valid = False
+
+        if is_valid:
+            for prestamoId in prestamos:
+                prestamo = Prestamo.objects.get(id=prestamoId)
+                data = model_to_dict(prestamo)
+                data['estado'] = request.POST.get('estado')
+                form = PrestamoForm(data=data, instance=prestamo, user=request.user)
+                if form.is_valid():
+                    form.save()
+            messages.success(request, 'Se cambiaron ' + str(len(prestamos)) + ' préstamos')
+        else:
+            messages.error(request, 'Hubo un error, no se cambió el estado de los préstamos seleccionados')
+
+    return redirect(next)
 
 
 def password_change(request):
@@ -139,9 +237,13 @@ def password_change(request):
 class UsuarioCreate(UserPassesTestMixin, CreateView):
     model = Usuario
     form_class = UsuarioForm
-    success_url = reverse_lazy('Inventario:index')
     template_name = 'Inventario/usuario_form.html'
     redirect_field_name = None
+
+    def get_success_url(self):
+        if self.request.user.esAdmin:
+            return reverse('Inventario:usuarioUpdate', kwargs={'pk': self.object.pk})
+        return reverse('Inventario:index')
 
     def test_func(self):
         return not self.request.user.is_authenticated or self.request.user.esAdmin
@@ -163,9 +265,13 @@ class UsuarioCreate(UserPassesTestMixin, CreateView):
 class UsuarioUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Usuario
     form_class = UsuarioForm
-    success_url = reverse_lazy('Inventario:index')
     template_name = 'Inventario/usuario_form.html'
     redirect_field_name = None
+
+    def get_success_url(self):
+        if self.request.user.esAdmin:
+            return reverse('Inventario:usuarioUpdate', kwargs=self.kwargs)
+        return reverse('Inventario:index')
 
     def test_func(self):
         return self.request.user.esAdmin
@@ -201,8 +307,12 @@ class UsuarioDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 class ReservaCreate(LoginRequiredMixin, CreateView):
     model = Reserva
     form_class = ReservaForm
-    success_url = reverse_lazy('Inventario:index')
     redirect_field_name = None
+
+    def get_success_url(self):
+        if self.request.user.esAdmin:
+            return reverse('Inventario:reservaUpdate', kwargs={'pk': self.object.pk})
+        return reverse('Inventario:index')
 
     def form_invalid(self, form):
         messages.error(self.request, 'Hubo un error en el formulario, la reserva no fue creada.')
@@ -221,8 +331,12 @@ class ReservaCreate(LoginRequiredMixin, CreateView):
 class ReservaUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Reserva
     form_class = ReservaForm
-    success_url = reverse_lazy('Inventario:index')
     redirect_field_name = None
+
+    def get_success_url(self):
+        if self.request.user.esAdmin:
+            return reverse('Inventario:reservaUpdate', kwargs=self.kwargs)
+        return reverse('Inventario:index')
 
     def test_func(self):
         return self.request.user.esAdmin
@@ -254,8 +368,12 @@ class ReservaDelete(LoginRequiredMixin, DeleteView):
 class PrestamoCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Prestamo
     form_class = PrestamoForm
-    success_url = reverse_lazy('Inventario:index')
     redirect_field_name = None
+
+    def get_success_url(self):
+        if self.request.user.esAdmin:
+            return reverse('Inventario:prestamoUpdate', kwargs={'pk': self.object.pk})
+        return reverse('Inventario:index')
 
     def test_func(self):
         return self.request.user.esAdmin
@@ -277,8 +395,12 @@ class PrestamoCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class PrestamoUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Prestamo
     form_class = PrestamoForm
-    success_url = reverse_lazy('Inventario:index')
     redirect_field_name = None
+
+    def get_success_url(self):
+        if self.request.user.esAdmin:
+            return reverse('Inventario:prestamoUpdate', kwargs=self.kwargs)
+        return reverse('Inventario:index')
 
     def test_func(self):
         return self.request.user.esAdmin
@@ -313,8 +435,12 @@ class PrestamoDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 class ArticuloCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Articulo
     form_class = ArticuloForm
-    success_url = reverse_lazy('Inventario:index')
     redirect_field_name = None
+
+    def get_success_url(self):
+        if self.request.user.esAdmin:
+            return reverse('Inventario:articuloUpdate', kwargs={'pk': self.object.pk})
+        return reverse('Inventario:index')
 
     def test_func(self):
         return self.request.user.esAdmin
@@ -331,8 +457,12 @@ class ArticuloCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class ArticuloUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Articulo
     form_class = ArticuloForm
-    success_url = reverse_lazy('Inventario:index')
     redirect_field_name = None
+
+    def get_success_url(self):
+        if self.request.user.esAdmin:
+            return reverse('Inventario:articuloUpdate', kwargs=self.kwargs)
+        return reverse('Inventario:index')
 
     def test_func(self):
         return self.request.user.esAdmin
@@ -362,8 +492,12 @@ class ArticuloDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 class EspacioCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Espacio
     form_class = EspacioForm
-    success_url = reverse_lazy('Inventario:index')
     redirect_field_name = None
+
+    def get_success_url(self):
+        if self.request.user.esAdmin:
+            return reverse('Inventario:espacioUpdate', kwargs={'pk': self.object.pk})
+        return reverse('Inventario:index')
 
     def test_func(self):
         return self.request.user.esAdmin
@@ -380,8 +514,12 @@ class EspacioCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class EspacioUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Espacio
     form_class = EspacioForm
-    success_url = reverse_lazy('Inventario:index')
     redirect_field_name = None
+
+    def get_success_url(self):
+        if self.request.user.esAdmin:
+            return reverse('Inventario:espacioUpdate', kwargs=self.kwargs)
+        return reverse('Inventario:index')
 
     def test_func(self):
         return self.request.user.esAdmin
