@@ -40,17 +40,164 @@ def landingPageUsuario(request):
 
 
 def landingPageAdministrador(request):
-    reservas = Reserva.objects.order_by('-fechaReserva')
+    reservas = Reserva.objects.order_by('-fechaReserva').exclude(articulo__isnull=True)
     prestamos = Prestamo.objects.order_by('-fechaPrestamo')
     lunes = (date.today() - timedelta(date.today().isoweekday() - 1))
     domingo = (date.today() + timedelta(7 - date.today().isoweekday()))
-    reservagrilla = Reserva.objects.filter(fechaReserva__range=[lunes, domingo])
+    reservagrilla = Reserva.objects.filter(fechaReserva__range=[lunes, domingo]).exclude(espacio__isnull=True)
+    reservalunes = reservagrilla.filter(fechaReserva__week_day=2)
+    reservamartes = reservagrilla.filter(fechaReserva__week_day=3)
+    reservamiercoles = reservagrilla.filter(fechaReserva__week_day=4)
+    reservajueves = reservagrilla.filter(fechaReserva__week_day=5)
+    reservaviernes = reservagrilla.filter(fechaReserva__week_day=6)
+    reservasabado = reservagrilla.filter(fechaReserva__week_day=7)
+    reservadomingo = reservagrilla.filter(fechaReserva__week_day=1)
+    lunes1 = reservalunes.filter(horaInicio__hour=9)
+    lunes2 = reservalunes.filter(horaInicio__hour=10)
+    lunes3 = reservalunes.filter(horaInicio__hour=11)
+    lunes4 = reservalunes.filter(horaInicio__hour=12)
+    lunes5 = reservalunes.filter(horaInicio__hour=13)
+    lunes6 = reservalunes.filter(horaInicio__hour=14)
+    lunes7 = reservalunes.filter(horaInicio__hour=15)
+    lunes8 = reservalunes.filter(horaInicio__hour=16)
+    lunes9 = reservalunes.filter(horaInicio__hour=17)
+    lunes10 = reservalunes.filter(horaInicio__hour=18)
+    martes1 = reservamartes.filter(horaInicio__hour=9)
+    martes2 = reservamartes.filter(horaInicio__hour=10)
+    martes3 = reservamartes.filter(horaInicio__hour=11)
+    martes4 = reservamartes.filter(horaInicio__hour=12)
+    martes5 = reservamartes.filter(horaInicio__hour=13)
+    martes6 = reservamartes.filter(horaInicio__hour=14)
+    martes7 = reservamartes.filter(horaInicio__hour=15)
+    martes8 = reservamartes.filter(horaInicio__hour=16)
+    martes9 = reservamartes.filter(horaInicio__hour=17)
+    martes10 = reservamartes.filter(horaInicio__hour=18)
+    miercoles1 = reservamiercoles.filter(horaInicio__hour=9)
+    miercoles2 = reservamiercoles.filter(horaInicio__hour=10)
+    miercoles3 = reservamiercoles.filter(horaInicio__hour=11)
+    miercoles4 = reservamiercoles.filter(horaInicio__hour=12)
+    miercoles5 = reservamiercoles.filter(horaInicio__hour=13)
+    miercoles6 = reservamiercoles.filter(horaInicio__hour=14)
+    miercoles7 = reservamiercoles.filter(horaInicio__hour=15)
+    miercoles8 = reservamiercoles.filter(horaInicio__hour=16)
+    miercoles9 = reservamiercoles.filter(horaInicio__hour=17)
+    miercoles10 = reservamiercoles.filter(horaInicio__hour=18)
+    jueves1 = reservajueves.filter(horaInicio__hour=9)
+    jueves2 = reservajueves.filter(horaInicio__hour=10)
+    jueves3 = reservajueves.filter(horaInicio__hour=11)
+    jueves4 = reservajueves.filter(horaInicio__hour=12)
+    jueves5 = reservajueves.filter(horaInicio__hour=13)
+    jueves6 = reservajueves.filter(horaInicio__hour=14)
+    jueves7 = reservajueves.filter(horaInicio__hour=15)
+    jueves8 = reservajueves.filter(horaInicio__hour=16)
+    jueves9 = reservajueves.filter(horaInicio__hour=17)
+    jueves10 = reservajueves.filter(horaInicio__hour=18)
+    viernes1 = reservaviernes.filter(horaInicio__hour=9)
+    viernes2 = reservaviernes.filter(horaInicio__hour=10)
+    viernes3 = reservaviernes.filter(horaInicio__hour=11)
+    viernes4 = reservaviernes.filter(horaInicio__hour=12)
+    viernes5 = reservaviernes.filter(horaInicio__hour=13)
+    viernes6 = reservaviernes.filter(horaInicio__hour=14)
+    viernes7 = reservaviernes.filter(horaInicio__hour=15)
+    viernes8 = reservaviernes.filter(horaInicio__hour=16)
+    viernes9 = reservaviernes.filter(horaInicio__hour=17)
+    viernes10 = reservaviernes.filter(horaInicio__hour=18)
+    sabado1 = reservasabado.filter(horaInicio__hour=9)
+    sabado2 = reservasabado.filter(horaInicio__hour=10)
+    sabado3 = reservasabado.filter(horaInicio__hour=11)
+    sabado4 = reservasabado.filter(horaInicio__hour=12)
+    sabado5 = reservasabado.filter(horaInicio__hour=13)
+    sabado6 = reservasabado.filter(horaInicio__hour=14)
+    sabado7 = reservasabado.filter(horaInicio__hour=15)
+    sabado8 = reservasabado.filter(horaInicio__hour=16)
+    sabado9 = reservasabado.filter(horaInicio__hour=17)
+    sabado10 = reservasabado.filter(horaInicio__hour=18)
+    domingo1 = reservadomingo.filter(horaInicio__hour=9)
+    domingo2 = reservadomingo.filter(horaInicio__hour=10)
+    domingo3 = reservadomingo.filter(horaInicio__hour=11)
+    domingo4 = reservadomingo.filter(horaInicio__hour=12)
+    domingo5 = reservadomingo.filter(horaInicio__hour=13)
+    domingo6 = reservadomingo.filter(horaInicio__hour=14)
+    domingo7 = reservadomingo.filter(horaInicio__hour=15)
+    domingo8 = reservadomingo.filter(horaInicio__hour=16)
+    domingo9 = reservadomingo.filter(horaInicio__hour=17)
+    domingo10 = reservadomingo.filter(horaInicio__hour=18)
     context = {
         'reservas': reservas,
         'prestamos': prestamos,
         'lunes': lunes,
         'domingo': domingo,
-        'reservagrilla': reservagrilla
+        'reservagrilla': reservagrilla,
+        'lunes1': lunes1.first(),
+        'lunes2': lunes2.first(),
+        'lunes3': lunes3.first(),
+        'lunes4': lunes4.first(),
+        'lunes5': lunes5.first(),
+        'lunes6': lunes6.first(),
+        'lunes7': lunes7.first(),
+        'lunes8': lunes8.first(),
+        'lunes9': lunes9.first(),
+        'lunes10': lunes10.first(),
+        'martes1': martes1.first(),
+        'martes2': martes2.first(),
+        'martes3': martes3.first(),
+        'martes4': martes4.first(),
+        'martes5': martes5.first(),
+        'martes6': martes6.first(),
+        'martes7': martes7.first(),
+        'martes8': martes8.first(),
+        'martes9': martes9.first(),
+        'martes10': martes10.first(),
+        'miercoles1': miercoles1.first(),
+        'miercoles2': miercoles2.first(),
+        'miercoles3': miercoles3.first(),
+        'miercoles4': miercoles4.first(),
+        'miercoles5': miercoles5.first(),
+        'miercoles6': miercoles6.first(),
+        'miercoles7': miercoles7.first(),
+        'miercoles8': miercoles8.first(),
+        'miercoles9': miercoles9.first(),
+        'miercoles10': miercoles10.first(),
+        'jueves1': jueves1.first(),
+        'jueves2': jueves2.first(),
+        'jueves3': jueves3.first(),
+        'jueves4': jueves4.first(),
+        'jueves5': jueves5.first(),
+        'jueves6': jueves6.first(),
+        'jueves7': jueves7.first(),
+        'jueves8': jueves8.first(),
+        'jueves9': jueves9.first(),
+        'jueves10': jueves10.first(),
+        'viernes1': viernes1.first(),
+        'viernes2': viernes2.first(),
+        'viernes3': viernes3.first(),
+        'viernes4': viernes4.first(),
+        'viernes5': viernes5.first(),
+        'viernes6': viernes6.first(),
+        'viernes7': viernes7.first(),
+        'viernes8': viernes8.first(),
+        'viernes9': viernes9.first(),
+        'viernes10': viernes10.first(),
+        'sabado1': sabado1.first(),
+        'sabado2': sabado2.first(),
+        'sabado3': sabado3.first(),
+        'sabado4': sabado4.first(),
+        'sabado5': sabado5.first(),
+        'sabado6': sabado6.first(),
+        'sabado7': sabado7.first(),
+        'sabado8': sabado8.first(),
+        'sabado9': sabado9.first(),
+        'sabado10': sabado10.first(),
+        'domingo1': domingo1.first(),
+        'domingo2': domingo2.first(),
+        'domingo3': domingo3.first(),
+        'domingo4': domingo4.first(),
+        'domingo5': domingo5.first(),
+        'domingo6': domingo6.first(),
+        'domingo7': domingo7.first(),
+        'domingo8': domingo8.first(),
+        'domingo9': domingo9.first(),
+        'domingo10': domingo10.first()
     }
     return render(request, 'Inventario/landingPageAdministrador.html', context)
 

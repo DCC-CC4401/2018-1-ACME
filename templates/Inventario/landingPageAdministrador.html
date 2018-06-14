@@ -11,14 +11,61 @@
 
 {% block content %}
 
-    <div class="header">
-        <img src="http://www.cei.cl/wp-content/uploads/2014/12/Logo-Cei.png" style="width:142px;height:142px;">
-    </div>
     <div class="relative"><h3>Administrador</h3></div>
+    <hr>
+    <h3> Semana del lunes: {{ lunes }} - domingo: {{ domingo }}</h3>
+    {% if reservagrilla %}
+    <table border="1" width="100%">
+    <tr><th>Bloque</th><th>Lunes</th><th>Martes</th><th>Miercoles</th><th>Jueves</th><th>Viernes</th><th>Sabado</th><th>Domingo</th></tr>
+
+    <tr><td>09:00 - 10:00</td><td>{{ lunes1.espacio.nombre }}</td><td>{{ martes1.espacio.nombre }}</td><td>{{ miercoles1.espacio.nombre }}</td><td>{{ jueves1.espacio.nombre }}</td>
+        <td>{{ viernes1.espacio.nombre }}</td><td>{{ sabado1.espacio.nombre }}</td><td>{{ domingo1.espacio.nombre }}</td>
+    </tr>
+
+    <tr><td>10:00 - 11:00</td><td>{{ lunes2.espacio.nombre }}</td><td>{{ martes2.espacio.nombre }}</td><td>{{ miercoles2.espacio.nombre }}</td><td>{{ jueves2.espacio.nombre }}</td>
+        <td>{{ viernes2.espacio.nombre }}</td><td>{{ sabado2.espacio.nombre }}</td><td>{{ domingo2.espacio.nombre }}</td>
+    </tr>
+
+    <tr><td>11:00 - 12:00</td><td>{{ lunes3.espacio.nombre }}</td><td>{{ martes3.espacio.nombre }}</td><td>{{ miercoles3.espacio.nombre }}</td><td>{{ jueves3.espacio.nombre }}</td>
+        <td>{{ viernes3.espacio.nombre }}</td><td>{{ sabado3.espacio.nombre }}</td><td>{{ domingo3.espacio.nombre }}</td>
+    </tr>
+
+    <tr><td>12:00 - 13:00</td><td>{{ lunes4.espacio.nombre }}</td><td>{{ martes4.espacio.nombre }}</td><td>{{ miercoles4.espacio.nombre }}</td><td>{{ jueves4.espacio.nombre }}</td>
+        <td>{{ viernes4.espacio.nombre }}</td><td>{{ sabado4.espacio.nombre }}</td><td>{{ domingo4.espacio.nombre }}</td>
+    </tr>
+
+    <tr><td>13:00 - 14:00</td><td>{{ lunes5.espacio.nombre }}</td><td>{{ martes5.espacio.nombre }}</td><td>{{ miercoles5.espacio.nombre }}</td><td>{{ jueves5.espacio.nombre }}</td>
+        <td>{{ viernes5.espacio.nombre }}</td><td>{{ sabado5.espacio.nombre }}</td><td>{{ domingo5.espacio.nombre }}</td>
+    </tr>
+
+    <tr><td>14:00 - 15:00</td><td>{{ lunes6.espacio.nombre }}</td><td>{{ martes6.espacio.nombre }}</td><td>{{ miercoles6.espacio.nombre }}</td><td>{{ jueves6.espacio.nombre }}</td>
+        <td>{{ viernes6.espacio.nombre }}</td><td>{{ sabado6.espacio.nombre }}</td><td>{{ domingo6.espacio.nombre }}</td>
+    </tr>
+
+    <tr><td>15:00 - 16:00</td><td>{{ lunes7.espacio.nombre }}</td><td>{{ martes7.espacio.nombre }}</td><td>{{ miercoles7.espacio.nombre }}</td><td>{{ jueves7.espacio.nombre }}</td>
+        <td>{{ viernes7.espacio.nombre }}</td><td>{{ sabado7.espacio.nombre }}</td><td>{{ domingo7.espacio.nombre }}</td>
+    </tr>
+
+    <tr><td>16:00 - 17:00</td><td>{{ lunes8.espacio.nombre }}</td><td>{{ martes8.espacio.nombre }}</td><td>{{ miercoles8.espacio.nombre }}</td><td>{{ jueves8.espacio.nombre }}</td>
+        <td>{{ viernes8.espacio.nombre }}</td><td>{{ sabado8.espacio.nombre }}</td><td>{{ domingo8.espacio.nombre }}</td>
+    </tr>
+
+    <tr><td>17:00 - 18:00</td><td>{{ lunes9.espacio.nombre }}</td><td>{{ martes9.espacio.nombre }}</td><td>{{ miercoles9.espacio.nombre }}</td><td>{{ jueves9.espacio.nombre }}</td>
+        <td>{{ viernes9.espacio.nombre }}</td><td>{{ sabado9.espacio.nombre }}</td><td>{{ domingo9.espacio.nombre }}</td>
+    </tr>
+
+    <tr><td>18:00 - 19:00</td><td>{{ lunes10.espacio.nombre }}</td><td>{{ martes10.espacio.nombre }}</td><td>{{ miercoles10.espacio.nombre }}</td><td>{{ jueves10.espacio.nombre }}</td>
+        <td>{{ viernes10.espacio.nombre }}</td><td>{{ sabado10.espacio.nombre }}</td><td>{{ domingo10.espacio.nombre }}</td>
+    </tr>
+
+    </table>
+    {% else %}
+    <p>No hay reservas de espacio en la semana</p>
+    {% endif %}
     <hr>
     <h3>Reservas</h3>
     {% if reservas %}
-        <table>
+        <table border="1" width="100%">
             <tr>
                 <th>ID</th>
                 <th>Fecha creacion</th>
@@ -33,7 +80,7 @@
                     <td>{{ reserva.id }}</td>
                     <td>{{ reserva.fechaCreacion }}</td>
                     <td>{{ reserva.solicitante.nombre }}  {{ reserva.solicitante.apellido }}</td>
-                    <td>{{ reserva.nombreItem }}</td>
+                    <td>{{ reserva.articulo.nombre }}</td>
                     <td>{{ reserva.fechaReserva }}</td>
                     <td>{{ reserva.horaInicio }}</td>
                     <td>{{ reserva.horaTermino }}</td>
@@ -46,7 +93,7 @@
     <hr>
     <h3>Préstamos</h3>
     {% if prestamos %}
-        <table>
+        <table border="1" width="100%">
             <tr>
                 <th>ID</th>
                 <th>Nombre solicitante</th>
@@ -59,18 +106,17 @@
             {% for prestamo in prestamos %}
                 <tr>
                     <td>{{ prestamo.id }}</td>
-                    <td>{{ prestamo.solicitante.nombre }} {{ prestamo.solicitante.apellido }}</td>
-                    <td>{{ prestamo.nombreItem }}</td>
+                    <td>{{ prestamo.reserva.solicitante.nombre }} {{ prestamo.reserva.solicitante.apellido }}</td>
+                    <td>{{ prestamo.reserva.articulo.nombre }}</td>
                     <td>{{ prestamo.fechaPrestamo }}</td>
-                    <td>{{ prestamo.horaInicio }}</td>
-                    <td>{{ prestamo.horaTermino }}</td>
-                    <td>{{ prestamo.estado }}</td>
+                    <td>{{ prestamo.reserva.horaInicio }}</td>
+                    <td>{{ prestamo.reserva.horaTermino }}</td>
+                    <td>{{ prestamo.get_estado_display }}</td>
                 </tr>
             {% endfor %}
         </table>
     {% else %}
         <p>No se encontraron prestamos.</p>
     {% endif %}
-    <h1>lunes: {{ lunes }} - domingo: {{ domingo }}</h1>
 
 {% endblock %}
