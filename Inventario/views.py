@@ -241,7 +241,7 @@ class UsuarioCreate(UserPassesTestMixin, CreateView):
     redirect_field_name = None
 
     def get_success_url(self):
-        if self.request.user.esAdmin:
+        if self.request.user.is_authenticated and self.request.user.esAdmin:
             return reverse('Inventario:usuarioUpdate', kwargs={'pk': self.object.pk})
         return reverse('Inventario:index')
 

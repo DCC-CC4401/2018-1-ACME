@@ -135,7 +135,13 @@ class Prestamo(models.Model):
         return 'Préstamo (' + str(self.reserva) + ')' + ' [' + self.get_code() + ']'
 
 
-class EstadoReserva(models.Model):
+class RegistroEstadoReserva(models.Model):
     fecha = models.DateTimeField(default=datetime.now)
     estado = models.CharField(max_length=1, choices=ESTADOS_RESERVA, default=PENDIENTE)
     reserva_asociada = models.ForeignKey(Reserva, on_delete=models.CASCADE)
+
+
+class RegistroEstadoPrestamo(models.Model):
+    fecha = models.DateTimeField(default=datetime.now)
+    estado = models.CharField(max_length=1, choices=ESTADOS_PRESTAMO, default=PENDIENTE)
+    prestamo_asociado = models.ForeignKey(Prestamo, on_delete=models.CASCADE)
