@@ -24,7 +24,6 @@ def index(request):
     else:
         return redirect('customAuth:login')
 
-
 def busquedaArticulos(request):
     context = {}
     if (request.GET.get('q', '')):
@@ -32,7 +31,6 @@ def busquedaArticulos(request):
         articulo = Articulo.objects.all().filter(nombre__icontains=q).order_by('nombre')
         context['articulos'] = articulo
     return render(request, 'Inventario/landingPageUsuario.html', context)
-
 
 def landingPageUsuario(request):
     context = {}

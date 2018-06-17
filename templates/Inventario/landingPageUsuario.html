@@ -12,29 +12,35 @@
 {% block content %}
 
     <div class="btn-group" style="width:100%">
-        <button style="width:50%">Artículos</button>
-        <button style="width:50%">Espacios</button>
+        <button class="btn-group" style="width:50%" onclick="mostrarContenido(event, 'Articulo')">Artículos</button>
+        <button class="btn-group" style="width:50%" onclick="mostrarContenido(event, 'Espacio')">Espacios</button>
     </div>
 
-    <form action="{% url 'Inventario:buscar' %}" method="GET">
-        {% csrf_token %}
-        <div class="search">
-            <input name="q" type="text" class="searchTerm" placeholder="Busca un artículo">
-            <button type="submit" class="searchButton">Buscar</button>
-        </div>
-    </form>
+    <div id="Articulo" class="tabcontent">
+        <form action="{% url 'Inventario:buscar' %}" method="GET">
+            {% csrf_token %}
+            <div class="search">
+                <input name="q" type="text" class="searchTerm" placeholder="Busca un artículo">
+                <button type="submit" class="searchButton">Buscar</button>
+            </div>
+        </form>
 
+        {% for articulo in articulos %}
+        <form action="articulo/{{ articulo.pk }}" method="GET">
+            {% csrf_token %}
+            <div class="button" id="resultado">
+                {% if articulos %}
+                <button type="submit">{{articulo.nombre}}</button>
+                {% endif %}
+            </div>
+        </form>
+        {% endfor %}
+    </div>
 
+    <div id="Espacio" class="tabcontent">
+        <p>Buscar espacios</p>
+    </div>
 
-    {% for articulo in articulos %}
-    <form action="articulo/{{ articulo.pk }}" method="GET">
-        {% csrf_token %}
-        <div class="button" id="resultado">
-            {% if articulos %}
-            <button type="submit">{{articulo.nombre}}</button>
-            {% endif %}
-        </div>
-    </form>
-    {% endfor %}
+    <script src="{% static 'Inventario/js/lpusuario.js' %}"></script>
 
 {% endblock %}
