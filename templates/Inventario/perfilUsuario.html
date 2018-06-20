@@ -11,8 +11,8 @@
 {% endblock %}
 
 {% block content %}
-    <div style="padding-left:50px; padding-right:50px;">
-        <div class="row justify-content-center align-items-center">
+    <div style="padding-left:50px; padding-right:50px;" class="mb-5">
+        <div class="row justify-content-center align-items-center mb-3">
             <div class="col-6">
                 <a href="{% url 'Inventario:index' %}" class="btn btn-info btn-lg btn-block" role="button">Reserva Tu
                     Espacio</a>
@@ -25,12 +25,15 @@
         <div class="row justify-content-start align-items-center">
             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" id="pills-reservas-tab" data-toggle="pill" href="#pills-reservas"
+                    <a class="nav-link active border border-primary" id="pills-reservas-tab" data-toggle="pill"
+                       href="#pills-reservas"
                        role="tab"
                        aria-controls="pills-reservas" aria-selected="true">Reservas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="pills-prestamos-tab" data-toggle="pill" href="#pills-prestamos" role="tab"
+                    <a class="nav-link border border-primary" id="pills-prestamos-tab" data-toggle="pill"
+                       href="#pills-prestamos"
+                       role="tab"
                        aria-controls="pills-prestamos" aria-selected="false">Préstamos</a>
                 </li>
             </ul>
@@ -40,55 +43,65 @@
                  aria-labelledby="pills-reservas-tab">
                 <div class="row justify-content-start">
                     <div class="col-6">
-                        {% if reservas %}
+                        {% if registro_reservas %}
                             <form id="form-reservas" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="next" value="{% url 'Inventario:perfilUsuario' usuarioId %}">
                                 <div class="list-group" id="list-tab-reservas" role="tablist">
-                                    {% for reserva in reservas %}
-                                        <div href="#list-reserva{{ reserva.id }}"
+                                    {% for registro in registro_reservas %}
+                                        <div href="#list-reserva{{ registro.reserva.id }}"
                                              class="d-flex align-items-center list-group-item list-group-item-action
                                             {% if forloop.counter == 1 %}
                                                 active
                                             {% endif %}"
-                                             id="list-reserva{{ reserva.id }}-list" data-toggle="list" role="tab"
-                                             aria-controls="reserva{{ reserva.id }}">
+                                             id="list-reserva{{ registro.reserva.id }}-list" data-toggle="list"
+                                             role="tab"
+                                             aria-controls="reserva{{ registro.reserva.id }}">
                                             <div class="col-1">
-                                                <a href="{% url 'Inventario:reservaUpdate' reserva.id %}"
-                                                   class="list-group-link btn btn-sm btn-primary-outline">
-                                                    <i class="fas fa-cog text-success"></i>
-                                                </a>
-
+                                                {% if user.esAdmin %}
+                                                    <a href="{% url 'Inventario:reservaUpdate' registro.reserva.id %}"
+                                                       class="list-group-link btn btn-sm btn-primary-outline lightgreen">
+                                                        <i class="fas fa-edit lightgreen"></i>
+                                                    </a>
+                                                {% endif %}
                                             </div>
                                             <div class="col-1">
-                                                <a href="{% url 'Inventario:reservaDelete' reserva.id %}"
-                                                   class="list-group-link btn btn-sm btn-primary-outline" onclick="">
-                                                    <i class="fas fa-trash text-danger"></i>
-                                                </a>
+                                                {% if user.esAdmin or registro.reserva.estado == PENDIENTE %}
+                                                    <a href="{% url 'Inventario:reservaDelete' registro.reserva.id %}"
+                                                       class="list-group-link btn btn-sm btn-primary-outline lightred">
+                                                        <i class="fas fa-trash lightred"></i>
+                                                    </a>
+                                                {% endif %}
                                             </div>
                                             <div class="col-1">
-                                                {% if user.esAdmin or reserva.estado == PENDIENTE %}
+                                                {% if user.esAdmin or registro.reserva.estado == PENDIENTE %}
                                                     <div class="custom-control custom-checkbox">
                                                         <input name="reservas" type="checkbox"
                                                                class="custom-control-input checkbox"
-                                                               id="checkbox-reserva-{{ reserva.id }}"
-                                                               value="{{ reserva.id }}"/>
+                                                               id="checkbox-reserva-{{ registro.reserva.id }}"
+                                                               value="{{ registro.reserva.id }}"/>
                                                         <label class="custom-control-label float-left"
-                                                               for="checkbox-reserva-{{ reserva.id }}"></label>
+                                                               for="checkbox-reserva-{{ registro.reserva.id }}"></label>
                                                     </div>
                                                 {% endif %}
                                             </div>
-                                            <div class="col-5">{{ reserva.articulo.nombre }}</div>
-                                            <div class="col-2">[{{ reserva.get_code }}]</div>
+                                            <div class="col-5">
+                                                {% if registro.reserva.articulo %}
+                                                    {{ registro.reserva.articulo.nombre }}
+                                                {% elif registro.reserva.espacio %}
+                                                    {{ registro.reserva.espacio.nombre }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-2">[{{ registro.reserva.get_code }}]</div>
                                             <div class="col-2">
                                                 <div class="float-right">
-                                            <span class="badge
-                                                {% if reserva.estado == PENDIENTE %} badge-info
-                                                {% elif reserva.estado == ENTREGADO %} badge-success
-                                                {% elif reserva.estado == RECHAZADO %} badge-danger
-                                                {% endif %}">
-                                                <i class="fas fa-angle-left"></i> {{ reserva.get_estado_display }}
-                                            </span>
+                                                <span class="badge
+                                                    {% if registro.reserva.estado == PENDIENTE %} badge-info
+                                                    {% elif registro.reserva.estado == ENTREGADO %} badge-success
+                                                    {% elif registro.reserva.estado == RECHAZADO %} badge-danger
+                                                    {% endif %}">
+                                                    <i class="fas fa-angle-left"></i> {{ registro.reserva.get_estado_display }}
+                                                </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -172,11 +185,82 @@
                     </div>
                     <div class="col-6">
                         <div class="tab-content" id="nav-reservas-tabContent">
-                            {% for reserva in reservas %}
+                            {% for registro in registro_reservas %}
                                 <div class="tab-pane fade {% if forloop.counter == 1 %} show active {% endif %}"
-                                     id="list-reserva{{ reserva.id }}" role="tabpanel"
-                                     aria-labelledby="list-reserva{{ reserva.id }}-list">
-                                    {{ reserva.articulo.descripcion }}
+                                     id="list-reserva{{ registro.reserva.id }}" role="tabpanel"
+                                     aria-labelledby="list-reserva{{ registro.reserva.id }}-list">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                {% if registro.reserva.articulo %}
+                                                    {{ registro.reserva.articulo.nombre }}
+                                                    {% if user.esAdmin %}
+                                                        <a href="{% url 'Inventario:articuloUpdate' registro.reserva.articulo.id %}"
+                                                           class="btn p-0 m-0 pl-1">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{% url 'Inventario:articuloDelete' registro.reserva.articulo.id %}"
+                                                           class="btn p-0 m-0">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                {% elif registro.reserva.espacio %}
+                                                    {{ registro.reserva.espacio.nombre }}
+                                                    {% if user.esAdmin %}
+                                                        <a href="{% url 'Inventario:espacioUpdate' registro.reserva.espacio.id %}"
+                                                           class="btn p-0 m-0 pl-1">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{% url 'Inventario:espacioDelete' registro.reserva.espacio.id %}"
+                                                           class="btn p-0 m-0">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                {% endif %}
+                                                <span class="float-right">{{ registro.reserva.fechaReserva }}</span>
+                                            </h5>
+                                            <h6 class="card-subtitle mb-4 text-muted small ">
+                                                {{ registro.reserva.get_estado_display }}
+                                                <span class="float-right">{{ registro.reserva.horaInicio }} -
+                                                    {{ registro.reserva.horaTermino }}</span>
+                                            </h6>
+                                            <div class="row no-gutters mb-2">
+                                                {% if registro.reserva.articulo %}
+                                                    <div class="col-4">
+                                                        <img src="{{ registro.reserva.articulo.foto.url }}"
+                                                             alt="foto de {{ registro.reserva.articulo.nombre }}"
+                                                             class="img-thumbnail">
+                                                    </div>
+                                                    <div class="ml-4 col-7">
+                                                        <p class="card-text textarea pl-2 pr-2 pt-1 pb-1 border rounded mb-2">
+                                                            {{ registro.reserva.articulo.descripcion }}</p>
+                                                        <a class="card-link"
+                                                           href="{% url 'Inventario:fichaArticulo' registro.reserva.articulo.id %}">
+                                                            Ver más detalles
+                                                        </a>
+                                                    </div>
+                                                {% elif registro.reserva.espacio %}
+                                                    <div class="col-4">
+                                                        <img src="{{ registro.reserva.espacio.foto.url }}"
+                                                             alt="foto de {{ registro.reserva.espacio.nombre }}"
+                                                             class="img-thumbnail">
+                                                    </div>
+                                                    <div class="ml-4 col-7">
+                                                        <div class="card-text textarea pl-2 pr-2 pt-1 pb-1 border rounded mb-2">
+                                                            {{ registro.reserva.espacio.descripcion }}</div>
+                                                        <a class="card-link"
+                                                           href="{% url 'Inventario:fichaEspacio' registro.reserva.espacio.id %}">
+                                                            Ver más detalles
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            {% for estado in registro.estados %}
+                                                <p class="card-text">{{ estado.fecha }}
+                                                    Solicitud {{ estado.get_estado_display }}</p>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
                                 </div>
                             {% endfor %}
                         </div>
@@ -188,29 +272,30 @@
                  aria-labelledby="pills-prestamos-tab">
                 <div class="row justify-content-start">
                     <div class="col-6">
-                        {% if prestamos %}
+                        {% if registro_prestamos %}
                             <form id="form-prestamos" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="next" value="{% url 'Inventario:perfilUsuario' usuarioId %}">
                                 <div class="list-group" id="list-tab-prestamos" role="tablist">
-                                    {% for prestamo in prestamos %}
-                                        <div href="#list-prestamo{{ prestamo.id }}"
+                                    {% for registro in registro_prestamos %}
+                                        <div href="#list-prestamo{{ registro.prestamo.id }}"
                                              class="d-flex align-items-center list-group-item list-group-item-action
                                             {% if forloop.counter == 1 %}
                                                 active
                                             {% endif %}"
-                                             id="list-prestamo{{ prestamo.id }}-list" data-toggle="list" role="tab"
-                                             aria-controls="prestamo{{ prestamo.id }}">
+                                             id="list-prestamo{{ reigstro.prestamo.id }}-list" data-toggle="list"
+                                             role="tab"
+                                             aria-controls="prestamo{{ registro.prestamo.id }}">
                                             <div class="col-1">
-                                                <a href="{% url 'Inventario:prestamoUpdate' prestamo.id %}"
-                                                   class="list-group-link btn btn-sm btn-primary-outline">
-                                                    <i class="fas fa-cog text-success"></i>
+                                                <a href="{% url 'Inventario:prestamoUpdate' registro.prestamo.id %}"
+                                                   class="list-group-link btn btn-sm btn-primary-outline lightgreen">
+                                                    <i class="fas fa-edit lightgreen"></i>
                                                 </a>
                                             </div>
                                             <div class="col-1">
-                                                <a href="{% url 'Inventario:prestamoDelete' prestamo.id %}"
-                                                   class="list-group-link btn btn-sm btn-primary-outline">
-                                                    <i class="fas fa-trash text-danger"></i>
+                                                <a href="{% url 'Inventario:prestamoDelete' registro.prestamo.id %}"
+                                                   class="list-group-link btn btn-sm btn-primary-outline lightred">
+                                                    <i class="fas fa-trash lightred"></i>
                                                 </a>
                                             </div>
                                             <div class="col-1">
@@ -218,23 +303,23 @@
                                                     <div class="custom-control custom-checkbox">
                                                         <input name="prestamos" type="checkbox"
                                                                class="custom-control-input checkbox"
-                                                               id="checkbox-prestamo-{{ prestamo.id }}"
-                                                               value="{{ prestamo.id }}"/>
+                                                               id="checkbox-prestamo-{{ registro.prestamo.id }}"
+                                                               value="{{ registro.prestamo.id }}"/>
                                                         <label class="custom-control-label float-left"
-                                                               for="checkbox-prestamo-{{ prestamo.id }}"></label>
+                                                               for="checkbox-prestamo-{{ registro.prestamo.id }}"></label>
                                                     </div>
                                                 {% endif %}
                                             </div>
-                                            <div class="col-5">{{ prestamo.reserva.articulo.nombre }}</div>
-                                            <div class="col-2">[{{ prestamo.get_code }}]</div>
+                                            <div class="col-5">{{ registro.prestamo.reserva.articulo.nombre }}</div>
+                                            <div class="col-2">[{{ registro.prestamo.get_code }}]</div>
                                             <div class="col-2">
                                                 <div class="float-right">
                                             <span class="badge
-                                                {% if prestamo.estado == PENDIENTE %} badge-info
-                                                {% elif prestamo.estado == RECIBIDO %} badge-success
-                                                {% elif prestamo.estado == PERDIDO %} badge-danger
+                                                {% if registro.prestamo.estado == PENDIENTE %} badge-info
+                                                {% elif registro.prestamo.estado == RECIBIDO %} badge-success
+                                                {% elif registro.prestamo.estado == PERDIDO %} badge-danger
                                                 {% endif %}">
-                                                <i class="fas fa-angle-left"></i> {{ prestamo.get_estado_display }}
+                                                <i class="fas fa-angle-left"></i> {{ registro.prestamo.get_estado_display }}
                                             </span>
                                                 </div>
                                             </div>
@@ -320,11 +405,83 @@
                     </div>
                     <div class="col-6">
                         <div class="tab-content" id="nav-prestamos-tabContent">
-                            {% for prestamo in prestamos %}
+                            {% for registro in registro_prestamos %}
                                 <div class="tab-pane fade show {% if forloop.counter == 1 %} show active {% endif %}"
-                                     id="list-prestamo{{ prestamo.id }}" role="tabpanel"
-                                     aria-labelledby="list-prestamo{{ prestamo.id }}-list">
-                                    {{ prestamo.articulo.descripcion }}
+                                     id="list-prestamo{{ registro.prestamo.id }}" role="tabpanel"
+                                     aria-labelledby="list-prestamo{{ registro.prestamo.id }}-list">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">
+                                                {% if registro.prestamo.reserva.articulo %}
+                                                    {{ registro.prestamo.reserva.articulo.nombre }}
+                                                    {% if user.esAdmin %}
+                                                        <a href="{% url 'Inventario:articuloUpdate' registro.prestamo.reserva.articulo.id %}"
+                                                           class="btn p-0 m-0 pl-1">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{% url 'Inventario:articuloDelete' registro.prestamo.reserva.articulo.id %}"
+                                                           class="btn p-0 m-0">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                {% elif registro.prestamo.reserva.espacio %}
+                                                    {{ registro.prestamo.reserva.espacio.nombre }}
+                                                    {% if user.esAdmin %}
+                                                        <a href="{% url 'Inventario:espacioUpdate' registro.prestamo.reserva.espacio.id %}"
+                                                           class="btn p-0 m-0 pl-1">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{% url 'Inventario:espacioDelete' registro.prestamo.reserva.espacio.id %}"
+                                                           class="btn p-0 m-0">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                {% endif %}
+                                                <span class="float-right">{{ registro.prestamo.reserva.fechaReserva }}</span>
+                                            </h5>
+                                            <h6 class="card-subtitle mb-4 text-muted small ">
+                                                {{ registro.prestamo.get_estado_display }}
+                                                <span class="float-right">{{ registro.prestamo.reserva.horaInicio }} -
+                                                    {{ registro.prestamo.reserva.horaTermino }}</span>
+                                            </h6>
+                                            <div class="row no-gutters mb-2">
+                                                {% if registro.prestamo.reserva.articulo %}
+                                                    <div class="col-4">
+                                                        <img src="{{ registro.prestamo.reserva.articulo.foto.url }}"
+                                                             alt="foto de {{ registro.prestamo.reserva.articulo.nombre }}"
+                                                             class="img-thumbnail">
+                                                    </div>
+                                                    <div class="ml-4 col-7">
+                                                        <div class="card-text textarea pl-2 pr-2 pt-1 pb-1 border rounded mb-2">
+                                                            {{ registro.prestamo.reserva.articulo.descripcion }}</div>
+                                                        <a class="card-link"
+                                                           href="{% url 'Inventario:fichaArticulo' registro.prestamo.reserva.articulo.id %}">
+                                                            Ver más detalles
+                                                        </a>
+                                                    </div>
+                                                {% elif registro.prestamo.reserva.espacio %}
+                                                    <div class="col-4">
+                                                        <img src="{{ registro.prestamo.reserva.espacio.foto.url }}"
+                                                             alt="foto de {{ registro.prestamo.reserva.espacio.nombre }}"
+                                                             class="img-thumbnail">
+                                                    </div>
+                                                    <div class="ml-4 col-7">
+                                                        <div class="card-text textarea pl-2 pr-2 pt-1 pb-1 border rounded mb-2">
+                                                            {{ registro.prestamo.reserva.espacio.descripcion }}</div>
+                                                        <a class="card-link"
+                                                           href="{% url 'Inventario:fichaEspacio' registro.prestamo.reserva.espacio.id %}">
+                                                            Ver más detalles
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            {% for estado in registro.estados %}
+                                                <p class="card-text">{{ estado.fecha }}
+                                                    Préstamo {{ estado.get_estado_display }}
+                                                </p>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
                                 </div>
                             {% endfor %}
                         </div>

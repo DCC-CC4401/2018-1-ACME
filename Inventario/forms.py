@@ -7,7 +7,8 @@ from django.forms import ModelForm, PasswordInput, Textarea, CharField, Validati
 from django.utils import timezone
 
 from Inventario.widgets import SwitchWidget
-from .models import Usuario, Reserva, Prestamo, Articulo, Espacio, PENDIENTE, DISPONIBLE
+from .models import Usuario, Reserva, Prestamo, Articulo, Espacio, PENDIENTE, DISPONIBLE, RegistroEstadoReserva, \
+    RegistroEstadoPrestamo
 
 
 class UsuarioForm(ModelForm):
@@ -121,13 +122,13 @@ class ReservaForm(ModelForm):
         fields = ['articulo', 'espacio', 'solicitante', 'fechaReserva', 'horaInicio', 'horaTermino', 'estado']
 
         widgets = {
-            'fechaReserva': DatePickerInput,
+            'fechaReserva': DatePickerInput(format='%d/%m/%Y'),
             'horaInicio': TimePickerInput,
             'horaTermino': TimePickerInput,
         }
 
         help_texts = {
-            'fechaReserva': 'mm/dd/aaaa',
+            'fechaReserva': 'dd/mm/aaaa',
             'horaInicio': 'La hora de inicio debe ser mayor o igual a las 9:00',
             'horaTermino': 'La hora de término debe ser menor o igual a las 18:00',
         }
@@ -153,13 +154,14 @@ class ReservaForm(ModelForm):
         fechaReserva = self.cleaned_data.get('fechaReserva')
         horaInicio = self.cleaned_data.get('horaInicio')
         horaTermino = self.cleaned_data.get('horaTermino')
-        print(self.cleaned_data)
         if articulo is None and espacio is None:
             self.add_error('articulo', 'Porfavor escoge un artículo o un espacio')
             self.add_error('espacio', 'Porfavor escoge un artículo o un espacio')
         if articulo is not None and espacio is not None:
             self.add_error('articulo', 'Solo puedes escoger un artículo o un espacio')
             self.add_error('espacio', 'Solo puedes escoger un artículo o un espacio')
+        print(self.data.get('fechaReserva'))
+        print(horaInicio)
         if self.instance.pk is None and datetime.combine(fechaReserva, horaInicio) < datetime.now() + timedelta(
                 minutes=55):
             self.add_error('fechaReserva',
@@ -178,7 +180,11 @@ class ReservaForm(ModelForm):
         if self.instance.pk is None:
             reserva.fechaCreacion = timezone.now()
         if commit:
+            creation = self.instance.pk is None
             reserva.save()
+            if creation or 'estado' in self.changed_data:
+                RegistroEstadoReserva.objects.create(estado=reserva.estado, reserva_asociada=reserva,
+                                                     fecha=timezone.now())
         return reserva
 
 
@@ -216,7 +222,11 @@ class PrestamoForm(ModelForm):
         if self.instance.pk is None:
             prestamo.fechaCreacion = timezone.now()
         if commit:
+            creation = self.instance.pk is None
             prestamo.save()
+            if creation or 'estado' in self.changed_data:
+                RegistroEstadoPrestamo.objects.create(estado=prestamo.estado, prestamo_asociado=prestamo,
+                                                      fecha=timezone.now())
         return prestamo
 
 

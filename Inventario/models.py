@@ -77,7 +77,7 @@ class Usuario(AbstractUser):
 class Articulo(models.Model):
     nombre = models.CharField(max_length=50, verbose_name='Nombre')
     descripcion = models.CharField(max_length=500, verbose_name='Descripción')
-    foto = models.ImageField(upload_to='static/imgarticulo/', default='imgarticulo/None/no-img.jpg',
+    foto = models.ImageField(upload_to='img/articulo/', default='img/articulo/default.png',
                              verbose_name='Foto')
     estado = models.CharField(max_length=1, choices=ESTADOS_ARTICULO, default=DISPONIBLE, verbose_name='Estado')
 
@@ -91,7 +91,7 @@ class Articulo(models.Model):
 class Espacio(models.Model):
     nombre = models.CharField(max_length=50, verbose_name='Nombre')
     descripcion = models.CharField(max_length=500, verbose_name='Descripción')
-    foto = models.ImageField(upload_to='static/imgespacio/', default='imgespacio/None/no-img.jpg',
+    foto = models.ImageField(upload_to='img/espacio/', default='img/espacio/default.png',
                              verbose_name='Foto')
     capacidad = models.PositiveIntegerField(default=0, verbose_name='Capacidad')
     estado = models.CharField(max_length=1, choices=ESTADOS_ESPACIO, default=DISPONIBLE, verbose_name='Estado')

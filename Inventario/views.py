@@ -6,13 +6,13 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.forms import model_to_dict
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from Inventario.forms import UsuarioForm, ReservaForm, PrestamoForm, ArticuloForm, EspacioForm, CustomPasswordChangeForm
 from Inventario.models import Reserva, Prestamo, Articulo, Espacio, Usuario, PENDIENTE, ENTREGADO, RECHAZADO, RECIBIDO, \
-    PERDIDO, in_estados, ESTADOS_RESERVA, ESTADOS_PRESTAMO
+    PERDIDO, in_estados, ESTADOS_RESERVA, ESTADOS_PRESTAMO, RegistroEstadoReserva, RegistroEstadoPrestamo
 
 
 def index(request):
@@ -24,6 +24,7 @@ def index(request):
     else:
         return redirect('customAuth:login')
 
+
 def busquedaArticulos(request):
     context = {}
     if (request.GET.get('q', '')):
@@ -31,6 +32,7 @@ def busquedaArticulos(request):
         articulo = Articulo.objects.all().filter(nombre__icontains=q).order_by('nombre')
         context['articulos'] = articulo
     return render(request, 'Inventario/landingPageUsuario.html', context)
+
 
 def landingPageUsuario(request):
     context = {}
@@ -204,28 +206,37 @@ def perfilUsuario(request, usuarioId):
     if (not request.user.is_authenticated) or (not request.user.esAdmin and request.user.id != usuarioId):
         return redirect('Inventario:index')
 
-    try:
-        usuario = Usuario.objects.get(id=usuarioId)
+    usuario = get_object_or_404(Usuario, id=usuarioId)
 
-        reservas = Reserva.objects.filter(solicitante=usuario)
-        prestamos = Prestamo.objects.filter(reserva__solicitante=usuario)
+    reservas = Reserva.objects.filter(solicitante=usuario).order_by('-fechaCreacion')
+    registro_reservas = []
+    for reserva in reservas:
+        registro = {}
+        registro['reserva'] = reserva
+        registro['estados'] = RegistroEstadoReserva.objects.filter(reserva_asociada=reserva).order_by('-fecha')
+        registro_reservas.append(registro)
 
-        context = {
-            'reservas': reservas,
-            'prestamos': prestamos,
-            'usuarioId': usuarioId,
-            'PENDIENTE': PENDIENTE,
-            'ENTREGADO': ENTREGADO,
-            'RECHAZADO': RECHAZADO,
-            'RECIBIDO': RECIBIDO,
-            'PERDIDO': PERDIDO,
-            'ESTADOS_RESERVA': ESTADOS_RESERVA,
-            'ESTADOS_PRESTAMO': ESTADOS_PRESTAMO,
-        }
-        return render(request, 'Inventario/perfilUsuario.html', context)
+    prestamos = Prestamo.objects.filter(reserva__solicitante=usuario).order_by('-fechaPrestamo')
+    registro_prestamos = []
+    for prestamo in prestamos:
+        registro = {}
+        registro['prestamo'] = prestamo
+        registro['estados'] = RegistroEstadoPrestamo.objects.filter(prestamo_asociado=prestamo).order_by('-fecha')
+        registro_prestamos.append(registro)
 
-    except Usuario.DoesNotExist:
-        return redirect('Inventario:index')
+    context = {
+        'registro_reservas': registro_reservas,
+        'registro_prestamos': registro_prestamos,
+        'usuarioId': usuarioId,
+        'PENDIENTE': PENDIENTE,
+        'ENTREGADO': ENTREGADO,
+        'RECHAZADO': RECHAZADO,
+        'RECIBIDO': RECIBIDO,
+        'PERDIDO': PERDIDO,
+        'ESTADOS_RESERVA': ESTADOS_RESERVA,
+        'ESTADOS_PRESTAMO': ESTADOS_PRESTAMO,
+    }
+    return render(request, 'Inventario/perfilUsuario.html', context)
 
 
 def fichaArticulo(request, articuloId):

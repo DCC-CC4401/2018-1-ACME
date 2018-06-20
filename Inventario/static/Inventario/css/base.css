@@ -4,8 +4,10 @@
     margin-bottom: 30px;
 }
 
-.navbar-nav li a {
-    line-height: 68px;
+.navbar-nav > li > a {
+    position: relative;
+    top: 7px;
+    line-height: 50px;
 }
 
 .nav-item {

@@ -95,7 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'America/Santiago'
 
@@ -126,3 +126,7 @@ MESSAGE_TAGS = {
 }
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+MEDIA_URL = '/media/'
