@@ -1,0 +1,13 @@
+{% extends 'Inventario/form_template.html' %}
+
+{% block create_title %}Registrar Artículo{% endblock %}
+{% block update_title %}Editar Artículo{% endblock %}
+{% block form_attrs %}enctype="multipart/form-data"{% endblock %}
+{% block buttons %}
+    <a href="{% url 'Inventario:index' %}" class="btn btn-secondary">Volver</a>
+    <input type="submit" class="btn btn-primary" value="Guardar">
+    {% if object %}
+        <a href="{% url 'Inventario:articuloDelete' object.pk %}" class="btn btn-danger">Eliminar
+            Artículo</a>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'Inventario/form_template.html' %}
+
+{% block extra_head %}
+    {{ form.media }}
+{% endblock %}
+
+{% block create_title %}Registrar Préstamo{% endblock %}
+{% block update_title %}Editar Préstamo{% endblock %}
+{% block buttons %}
+    <a href="{% url 'Inventario:index' %}" class="btn btn-secondary">Volver</a>
+    <input type="submit" class="btn btn-primary" value="Guardar">
+    {% if object %}
+        <a href="{% url 'Inventario:prestamoDelete' object.pk %}" class="btn btn-danger">Eliminar
+            Préstamo</a>
+    {% endif %}
+{% endblock %}

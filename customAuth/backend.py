@@ -1,12 +1,12 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.contrib.auth.backends import ModelBackend
 
 
-class CustomBackend(object):
-    def authenticate(self, username, password):
+class CustomBackend(ModelBackend):
+    def authenticate(self, username=None, password=None, **kwargs):
         my_user_model = get_user_model()
         try:
-            user = my_user_model.objects.get(Q(email=username))
+            user = my_user_model.objects.get(email=username)
             if user.check_password(password):
                 return user
         except my_user_model.DoesNotExist:

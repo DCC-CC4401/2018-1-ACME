@@ -1,0 +1,12 @@
+{% extends 'Inventario/form_template.html' %}
+
+{% block create_title %}Registrar Usuario{% endblock %}
+{% block update_title %}Editar Usuario{% endblock %}
+{% block buttons %}
+    <a href="{% url 'Inventario:index' %}" class="btn btn-secondary">Volver</a>
+    <input type="submit" class="btn btn-primary" value="Guardar">
+    {% if object %}
+        <a href="{% url 'Inventario:usuarioDelete' object.pk %}" class="btn btn-danger">Eliminar
+            Usuario</a>
+    {% endif %}
+{% endblock %}

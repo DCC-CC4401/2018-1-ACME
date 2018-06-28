@@ -1,0 +1,16 @@
+{% extends 'Inventario/form_template.html' %}
+
+{% block extra_head %}
+    {{ form.media }}
+{% endblock %}
+
+{% block create_title %}Registrar Reserva{% endblock %}
+{% block update_title %}Editar Reserva{% endblock %}
+{% block buttons %}
+    <a href="{% url 'Inventario:index' %}" class="btn btn-secondary">Volver</a>
+    <input type="submit" class="btn btn-primary" value="Guardar">
+    {% if object %}
+        <a href="{% url 'Inventario:reservaDelete' object.pk %}" class="btn btn-danger">Eliminar
+            Reserva</a>
+    {% endif %}
+{% endblock %}

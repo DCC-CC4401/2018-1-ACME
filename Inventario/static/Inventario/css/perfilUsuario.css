@@ -1,6 +1,53 @@
-#myAlert {
+.custom-checkbox .custom-control-input ~ .custom-control-label::before {
+    background-color: darkgray;
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: purple;
+}
+
+.custom-control-label::before,
+.custom-control-label::after {
+    width: 20px;
+    height: 20px;
+}
+
+.custom-checkbox {
+    margin: 0 0 3px 0;
+}
+
+.nav-pills > li {
+    margin-right: 0;
+}
+
+.bottom-control-buttons {
     position: fixed;
-    bottom: 10px;
-    width: 50%;
-    z-index: 999;
+    bottom: 30px;
+    left: 30px;
+    z-index: 998;
+}
+
+.btn-primary-outline {
+    background-color: transparent;
+    border-color: #ccc;
+}
+
+.lightgreen {
+    color: #72bf81;
+    border-color: #7ed18f;
+}
+
+.lightred {
+    color: #ff7861;
+    border-color: #ff7861;
+}
+
+.img-thumbnail {
+    height: 200px;
+    width: 200px;
+}
+
+.textarea {
+    overflow-y: scroll;
+    height: 170px;
 }

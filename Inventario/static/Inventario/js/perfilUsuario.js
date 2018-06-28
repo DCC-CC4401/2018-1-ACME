@@ -1,9 +1,15 @@
 $(document).ready(function () {
-    window.setTimeout(function () {
-        showAlert();
-    }, 100);
-});
+    $('.list-group-item .custom-control-label').on('click', function () {
+        var checkBox = $(this).prev('input');
 
-function showAlert() {
-    $("#myAlert").addClass("show");
-}
+        if ($(checkBox).attr('checked'))
+            $(checkBox).removeAttr('checked');
+        else
+            $(checkBox).attr('checked', 'checked');
+        return false;
+    });
+    $('.list-group-link').on('click', function () {
+        window.location.href = $(this).attr('href');
+        return false;
+    });
+});

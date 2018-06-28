@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
+from django.contrib.messages import constants as messages
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -35,9 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms',
     'Inventario.apps.InventarioConfig',
     'customAuth',
     'widget_tweaks',
+    'bootstrap_datepicker_plus',
 ]
 
 MIDDLEWARE = [
@@ -85,26 +89,15 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+
 ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 
@@ -117,8 +110,23 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-AUTH_USER_MODEL = 'customAuth.CustomUser'
+AUTH_USER_MODEL = 'Inventario.Usuario'
 AUTHENTICATION_BACKENDS = ('customAuth.backend.CustomBackend',)
 
+LOGIN_URL = 'Inventario:index'
 LOGIN_REDIRECT_URL = 'Inventario:index'
 LOGOUT_REDIRECT_URL = 'Inventario:index'
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+MEDIA_URL = '/media/'

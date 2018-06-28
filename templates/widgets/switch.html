@@ -1,0 +1,9 @@
+{% load static %}
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'Inventario/css/toggle.css' %}">
+{% endblock %}
+
+<label class="switch">
+    {% include "django/forms/widgets/input.html" %}
+    <span class="slider round"></span>
+</label>
