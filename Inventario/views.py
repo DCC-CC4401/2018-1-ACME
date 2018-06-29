@@ -12,7 +12,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from Inventario.forms import UsuarioForm, ReservaForm, PrestamoForm, ArticuloForm, EspacioForm, CustomPasswordChangeForm
 from Inventario.models import Reserva, Prestamo, Articulo, Espacio, Usuario, PENDIENTE, ENTREGADO, RECHAZADO, RECIBIDO, \
-    PERDIDO, in_estados, ESTADOS_RESERVA, ESTADOS_PRESTAMO, RegistroEstadoReserva, RegistroEstadoPrestamo
+    PERDIDO, in_estados, ESTADOS_RESERVA, ESTADOS_PRESTAMO, RegistroEstadoReserva, RegistroEstadoPrestamo, DISPONIBLE, \
+    PRESTAMO, REPARACION
 
 
 def index(request):
@@ -240,12 +241,23 @@ def perfilUsuario(request, usuarioId):
 
 
 def fichaArticulo(request, articuloId):
-    reservas = Reserva.objects.order_by('-fechaReserva')
-    articulo = Articulo.objects
+    reservas = Reserva.objects.order_by('-fechaCreacion')
+    registro_reservas = []
+    for reserva in reservas:
+        registro = {}
+        registro['reserva'] = reserva
+        registro['estados'] = RegistroEstadoReserva.objects.filter(reserva_asociada=reserva).order_by('-fecha')
+        registro_reservas.append(registro)
+
+    articulo = Articulo.objects.all()
 
     context = {
-        'reservas': reservas,
+        'registro_reservas':  registro_reservas,
         'articulo': articulo,
+        'DISPONIBLE': DISPONIBLE,
+        'PRESTAMO': PRESTAMO,
+        'REPARACION': REPARACION,
+        'PERDIDO': PERDIDO,
     }
     return render(request, 'Inventario/fichaArticulo.html', context)
 
