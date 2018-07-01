@@ -26,10 +26,24 @@
     </ul>
 <div class="tab-content" id="pills-tabContent">
 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-    <h3> Semana del lunes: {{ lunes }} - domingo: {{ domingo }}</h3>
-    {% if reservagrilla %}
-        <table class="table table-bordered">
+{#    {% if reservagrilla %}#}
+        <table class="table table-bordered table-sm">
   <thead>
+    <tr>
+        <th><form method="get" action="{% url 'Inventario:lpAdmin' %}">
+            <center>
+                <button type="submit" class="btn btn-dark" value="{{ count|add:"-1" }}" name="count"><</button>
+            </center>
+        </form></th>
+
+        <th colspan="6" scope="col"><center>Semana del lunes: {{ lunes }} - domingo: {{ domingo }}</center></th>
+
+        <th><form method="get" action="{% url 'Inventario:lpAdmin' %}">
+            <center>
+                <button type="submit" class="btn btn-dark" value="{{ count|add:"1" }}" name="count">> </button>
+            </center>
+        </form></th>
+    </tr>
     <tr>
       <th scope="col">Bloque</th>
       <th scope="col">Lunes</th>
@@ -144,9 +158,9 @@
     </tr>
   </tbody>
 </table>
-    {% else %}
-    <p>No hay reservas de espacio en la semana</p>
-    {% endif %}
+{#    {% else %}#}
+{#    <p>No hay reservas de espacio en la semana del lunes: {{ lunes }} - domingo: {{ domingo }}</p>#}
+{#    {% endif %}#}
 </div>
     <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
     <h3>Reservas</h3>
@@ -161,6 +175,7 @@
               <th scope="col">Fecha de reserva</th>
               <th scope="col">Inicio</th>
               <th scope="col">Termino</th>
+              <th scope="col">Estado</th>
             </tr>
           </thead>
           <tbody>
@@ -173,6 +188,7 @@
                     <td>{{ reserva.fechaReserva }}</td>
                     <td>{{ reserva.horaInicio }}</td>
                     <td>{{ reserva.horaTermino }}</td>
+                    <td>{{ reserva.get_estado_display }}</td>
                 </tr>
             {% endfor %}
           </tbody>

@@ -41,10 +41,13 @@ def landingPageUsuario(request):
 
 
 def landingPageAdministrador(request):
-    reservas = Reserva.objects.order_by('-fechaReserva').exclude(articulo__isnull=True)
+    count=0
+    if (request.GET.get('count','')):
+        count=int(request.GET.get('count',''))
+    reservas = Reserva.objects.order_by('-fechaReserva').exclude(articulo__isnull=True).filter(estado='P')
     prestamos = Prestamo.objects.order_by('-fechaPrestamo')
-    lunes = (date.today() - timedelta(date.today().isoweekday() - 1))
-    domingo = (date.today() + timedelta(7 - date.today().isoweekday()))
+    lunes = (date.today() - timedelta(date.today().isoweekday() - 1)+timedelta(7*count))
+    domingo = (date.today() + timedelta(7 - date.today().isoweekday())+timedelta(7*count))
     reservagrilla = Reserva.objects.filter(fechaReserva__range=[lunes, domingo]).exclude(espacio__isnull=True)
     reservalunes = reservagrilla.filter(fechaReserva__week_day=2)
     reservamartes = reservagrilla.filter(fechaReserva__week_day=3)
@@ -124,6 +127,7 @@ def landingPageAdministrador(request):
     domingo9 = reservadomingo.filter(horaInicio__hour=17)
     domingo10 = reservadomingo.filter(horaInicio__hour=18)
     context = {
+        'count': count,
         'reservas': reservas,
         'prestamos': prestamos,
         'lunes': lunes,
