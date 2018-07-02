@@ -10,7 +10,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from Inventario.forms import UsuarioForm, ReservaForm, PrestamoForm, ArticuloForm, EspacioForm, CustomPasswordChangeForm
+from Inventario.forms import UsuarioForm, ReservaForm, PrestamoForm, ArticuloForm, EspacioForm, \
+    CustomPasswordChangeForm, SimpleReservaForm
 from Inventario.models import Reserva, Prestamo, Articulo, Espacio, Usuario, PENDIENTE, ENTREGADO, RECHAZADO, RECIBIDO, \
     PERDIDO, in_estados, ESTADOS_RESERVA, ESTADOS_PRESTAMO, RegistroEstadoReserva, RegistroEstadoPrestamo, DISPONIBLE, \
     PRESTAMO, REPARACION
@@ -41,13 +42,13 @@ def landingPageUsuario(request):
 
 
 def landingPageAdministrador(request):
-    count=0
-    if (request.GET.get('count','')):
-        count=int(request.GET.get('count',''))
+    count = 0
+    if (request.GET.get('count', '')):
+        count = int(request.GET.get('count', ''))
     reservas = Reserva.objects.order_by('-fechaReserva').exclude(articulo__isnull=True).filter(estado='P')
     prestamos = Prestamo.objects.order_by('-fechaPrestamo')
-    lunes = (date.today() - timedelta(date.today().isoweekday() - 1)+timedelta(7*count))
-    domingo = (date.today() + timedelta(7 - date.today().isoweekday())+timedelta(7*count))
+    lunes = (date.today() - timedelta(date.today().isoweekday() - 1) + timedelta(7 * count))
+    domingo = (date.today() + timedelta(7 - date.today().isoweekday()) + timedelta(7 * count))
     reservagrilla = Reserva.objects.filter(fechaReserva__range=[lunes, domingo]).exclude(espacio__isnull=True)
     reservalunes = reservagrilla.filter(fechaReserva__week_day=2)
     reservamartes = reservagrilla.filter(fechaReserva__week_day=3)
@@ -245,23 +246,19 @@ def perfilUsuario(request, usuarioId):
 
 
 def fichaArticulo(request, articuloId):
-    reservas = Reserva.objects.order_by('-fechaCreacion')
-    registro_reservas = []
-    for reserva in reservas:
-        registro = {}
-        registro['reserva'] = reserva
-        registro['estados'] = RegistroEstadoReserva.objects.filter(reserva_asociada=reserva).order_by('-fecha')
-        registro_reservas.append(registro)
-
-    articulo = Articulo.objects.all()
+    reservas = Reserva.objects.filter(articulo__id=articuloId).order_by('-fechaCreacion')
+    articulo = get_object_or_404(Articulo, id=articuloId)
+    reserva_form = SimpleReservaForm(user=request.user, initial={'articulo': articulo, 'solicitante': request.user,
+                                                                 'estado': PENDIENTE})
 
     context = {
-        'registro_reservas':  registro_reservas,
+        'reservas': reservas,
         'articulo': articulo,
         'DISPONIBLE': DISPONIBLE,
         'PRESTAMO': PRESTAMO,
         'REPARACION': REPARACION,
         'PERDIDO': PERDIDO,
+        'reserva_form': reserva_form,
     }
     return render(request, 'Inventario/fichaArticulo.html', context)
 
@@ -275,7 +272,20 @@ def fichaPrestamo(request, prestamoId):
 
 
 def fichaEspacio(request, espacioId):
-    return HttpResponse('Ficha espacio ' + str(espacioId))
+    reservas = Reserva.objects.filter(espacio__id=espacioId).order_by('-fechaCreacion')
+    espacio = get_object_or_404(Espacio, id=espacioId)
+    reserva_form = SimpleReservaForm(user=request.user, initial={'espacio': espacio, 'solicitante': request.user,
+                                                                 'estado': PENDIENTE})
+
+    context = {
+        'reservas': reservas,
+        'espacio': espacio,
+        'DISPONIBLE': DISPONIBLE,
+        'PRESTAMO': PRESTAMO,
+        'REPARACION': REPARACION,
+        'reserva_form': reserva_form,
+    }
+    return render(request, 'Inventario/fichaEspacio.html', context)
 
 
 def eliminarListaReservas(request):

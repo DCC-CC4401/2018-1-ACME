@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block title %}
-    Ficha Artículo
+    Ficha Espacio
 {% endblock %}
 
 {% block extra_head %}
@@ -14,31 +14,30 @@
 
     <div style="padding-left:50px; padding-right:50px;" class="mb-5">
         <h2>
-            {{ articulo.nombre }}
+            {{ espacio.nombre }}
             {% if user.esAdmin %}
-                <a href="{% url 'Inventario:articuloUpdate' articulo.id %}"
+                <a href="{% url 'Inventario:espacioUpdate' espacio.id %}"
                    class="btn btn-lg p-0 m-0 pl-1">
                     <i class="fas fa-edit"></i>
                 </a>
-                <a href="{% url 'Inventario:articuloDelete' articulo.id %}"
+                <a href="{% url 'Inventario:espacioDelete' espacio.id %}"
                    class="btn btn-lg p-0 m-0">
                     <i class="fas fa-trash"></i>
                 </a>
             {% endif %}
             <span style="margin-left: 15px" class="badge
-            {% if articulo.estado == DISPONIBLE %} badge-success
-            {% elif articulo.estado == PRESTAMO %} badge-info
-            {% elif articulo.estado == REPARACION %} badge-warning
-            {% elif articulo.estado == PERDIDO %} badge-danger
+            {% if espacio.estado == DISPONIBLE %} badge-success
+            {% elif espacio.estado == PRESTAMO %} badge-info
+            {% elif espacio.estado == REPARACION %} badge-warning
             {% endif %}
-        "><i class="fas fa-angle-left"></i> {{ articulo.get_estado_display }}</span>
+        "><i class="fas fa-angle-left"></i> {{ espacio.get_estado_display }}</span>
         </h2>
 
         <div class="row mt-5">
             <div class="col-8">
                 <div class="row justify-content-center align-items-center mb-5">
                     <div class="col-12 text-center">
-                        <img class="img-thumbnail" src="{{ articulo.foto.url }}" alt="foto de {{ articulo.nombre }}"
+                        <img class="img-thumbnail" src="{{ espacio.foto.url }}" alt="foto de {{ espacio.nombre }}"
                              style="width: 400px; height: 400px">
                     </div>
                 </div>
@@ -47,7 +46,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="card-text textarea pl-2 pr-2 pt-1 pb-1 rounded mb-2">
-                                    {{ articulo.descripcion }}
+                                    {{ espacio.descripcion }}
                                 </div>
                             </div>
                         </div>
@@ -86,7 +85,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Historial Reservas</h5>
+                                <h5 class="card-title">Historial de Reservas</h5>
                                 {% if reservas %}
                                     <ul style="list-style-type:disc">
                                         {% for reserva in reservas %}

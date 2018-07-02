@@ -32,3 +32,8 @@ main::after {
     content: "";
     display: table;
 }
+
+.vertical-align {
+    display: flex;
+    align-items: center;
+}

@@ -154,14 +154,13 @@ class ReservaForm(ModelForm):
         fechaReserva = self.cleaned_data.get('fechaReserva')
         horaInicio = self.cleaned_data.get('horaInicio')
         horaTermino = self.cleaned_data.get('horaTermino')
+
         if articulo is None and espacio is None:
             self.add_error('articulo', 'Porfavor escoge un artículo o un espacio')
             self.add_error('espacio', 'Porfavor escoge un artículo o un espacio')
         if articulo is not None and espacio is not None:
             self.add_error('articulo', 'Solo puedes escoger un artículo o un espacio')
             self.add_error('espacio', 'Solo puedes escoger un artículo o un espacio')
-        print(self.data.get('fechaReserva'))
-        print(horaInicio)
         if self.instance.pk is None and datetime.combine(fechaReserva, horaInicio) < datetime.now() + timedelta(
                 minutes=55):
             self.add_error('fechaReserva',
@@ -319,3 +318,15 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         if len(password) < 8:
             raise ValidationError('El largo de la contraseña debe ser mayor o igual a 8')
         return password
+
+
+class SimpleReservaForm(ReservaForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['solicitante'].widget = HiddenInput()
+        self.fields['solicitante'].required = False
+        self.fields['estado'].widget = HiddenInput()
+        self.fields['estado'].required = False
+        self.fields['espacio'].widget = HiddenInput()
+        self.fields['articulo'].widget = HiddenInput()
