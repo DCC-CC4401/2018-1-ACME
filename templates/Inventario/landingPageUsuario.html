@@ -11,36 +11,141 @@
 
 {% block content %}
 
-    <div class="btn-group" style="width:100%">
-        <button class="btn-group" style="width:50%" onclick="mostrarContenido(event, 'Articulo')">Artículo</button>
-        <button class="btn-group" style="width:50%" onclick="mostrarContenido(event, 'Espacio')">Espacios</button>
-    </div>
+    <ul class="nav nav-tabs nav-pills justify-content-center" id="pestañas">
+      <li class="nav-item">
+        <a class="nav-link active" id="art" href="#buscarArticulos" aria-selected="true">Artículos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="esp" href="#buscarEspacios" aria-selected="false">Espacios</a>
+      </li>
+    </ul>
 
-    <div id="Articulo" class="tabcontent">
-        <form action="{% url 'Inventario:buscar' %}" method="GET">
-            {% csrf_token %}
-            <div class="search">
-                <input name="q" type="text" class="searchTerm" placeholder="Busca un artículo">
-                <button type="submit" class="searchButton">Buscar</button>
+    <div class="tab-content" id="pestañasContent">
+
+        <div class="tab-pane fade show active" id="buscarArticulos">
+          <form action="{% url 'Inventario:buscar' %}" method="GET">
+            <div class="input-group mb-3 w-75 p-3 mx-auto">
+              <input name="q" type="text" class="form-control" placeholder="Buscar artículo" style="width: 20px">
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+              </div>
             </div>
-        </form>
-
-        {% for articulo in articulos %}
-        <form action="articulo/{{ articulo.pk }}" method="GET">
-            {% csrf_token %}
-            <div class="button" id="resultado">
-                {% if articulos %}
-                <button type="submit">{{articulo.nombre}}</button>
-                {% endif %}
+          </form>
+          {% for articulo in articulos %}
+            <div>
+              <a class="btn btn-primary" href="{% url 'Inventario:fichaArticulo' articulo.id %}">{{ articulo.nombre }}</a>
             </div>
-        </form>
-        {% endfor %}
-    </div>
+          {% endfor %}
 
-    <div id="Espacio" class="tabcontent">
-        <p>Buscar espacios</p>
-    </div>
+          <div id="accordion">
+              <div class="card">
+                <div class="card-header" id="headingOne">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Búsqueda avanzada
+                    </button>
+                  </h5>
+                </div>
 
-    <script src="{% static 'Inventario/js/lpusuario.js' %}"></script>
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                  <div class="card-body">
+                      Búsqueda avanzada
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        </div>
+
+        <div class="tab-pane fade" id="buscarEspacios">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">Hora</th>
+                  <th scope="col">Lunes</th>
+                  <th scope="col">Martes</th>
+                  <th scope="col">Miércoles</th>
+                  <th scope="col">Jueves</th>
+                  <th scope="col">Viernes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">09:00 - 10:00</th>
+                  <td>{{ lunes1.espacio.nombre }}</td>
+                  <td>{{ martes1.espacio.nombre }}</td>
+                  <td>{{ miercoles1.espacio.nombre }}</td>
+                  <td>{{ jueves1.espacio.nombre }}</td>
+                  <td>{{ viernes1.espacio.nombre }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">10:00 - 11:00</th>
+                  <td>{{ lunes2.espacio.nombre }}</td>
+                  <td>{{ martes2.espacio.nombre }}</td>
+                  <td>{{ miercoles2.espacio.nombre }}</td>
+                  <td>{{ jueves2.espacio.nombre }}</td>
+                  <td>{{ viernes2.espacio.nombre }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">11:00 - 12:00</th>
+                  <td>{{ lunes3.espacio.nombre }}</td>
+                  <td>{{ martes3.espacio.nombre }}</td>
+                  <td>{{ miercoles3.espacio.nombre }}</td>
+                  <td>{{ jueves3.espacio.nombre }}</td>
+                  <td>{{ viernes3.espacio.nombre }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">12:00 - 13:00</th>
+                  <td>{{ lunes4.espacio.nombre }}</td>
+                  <td>{{ martes4.espacio.nombre }}</td>
+                  <td>{{ miercoles4.espacio.nombre }}</td>
+                  <td>{{ jueves4.espacio.nombre }}</td>
+                  <td>{{ viernes4.espacio.nombre }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">13:00 - 14:00</th>
+                  <td>{{ lunes5.espacio.nombre }}</td>
+                  <td>{{ martes5.espacio.nombre }}</td>
+                  <td>{{ miercoles5.espacio.nombre }}</td>
+                  <td>{{ jueves5.espacio.nombre }}</td>
+                  <td>{{ viernes5.espacio.nombre }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">14:00 - 15:00</th>
+                  <td>{{ lunes6.espacio.nombre }}</td>
+                  <td>{{ martes6.espacio.nombre }}</td>
+                  <td>{{ miercoles6.espacio.nombre }}</td>
+                  <td>{{ jueves6.espacio.nombre }}</td>
+                  <td>{{ viernes6.espacio.nombre }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">15:00 - 16:00</th>
+                  <td>{{ lunes7.espacio.nombre }}</td>
+                  <td>{{ martes7.espacio.nombre }}</td>
+                  <td>{{ miercoles7.espacio.nombre }}</td>
+                  <td>{{ jueves7.espacio.nombre }}</td>
+                  <td>{{ viernes7.espacio.nombre }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">16:00 - 17:00</th>
+                  <td>{{ lunes8.espacio.nombre }}</td>
+                  <td>{{ martes8.espacio.nombre }}</td>
+                  <td>{{ miercoles8.espacio.nombre }}</td>
+                  <td>{{ jueves8.espacio.nombre }}</td>
+                  <td>{{ viernes8.espacio.nombre }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">17:00 - 18:00</th>
+                  <td>{{ lunes9.espacio.nombre }}</td>
+                  <td>{{ martes9.espacio.nombre }}</td>
+                  <td>{{ miercoles9.espacio.nombre }}</td>
+                  <td>{{ jueves9.espacio.nombre }}</td>
+                  <td>{{ viernes9.espacio.nombre }}</td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+
+    </div>
 
 {% endblock %}

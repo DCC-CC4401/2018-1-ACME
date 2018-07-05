@@ -1,86 +1,43 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans);
-
-body{
-  background: #ffffff;
-  font-family: 'Open Sans', sans-serif;
+* {
+    box-sizing: border-box;
 }
 
-.search {
-  width: 70%;
-  position: relative;
-    top: 30px;
-    left: 170px;
-}
-
-.searchTerm {
-  float: left;
-  width: 100%;
-  border: 1px solid #000000;
-  padding: 20px;
-  height: 30px;
-  outline: none;
-  color: #9DBFAF;
-}
-
-.searchTerm:focus{
-  color: #000000;
-}
-
-.searchButton {
-  position: absolute;
-  right: -59px;
-  width: 150px;
-  height: 42px;
-  border: 1px solid #000000;
-  background: #ffffff;
-  text-align: center;
-  color: #000000;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.btn-group button {
-    background-color: #ffffff; /* Green background */
-    border: 1px solid lightgray; /* Green border */
-    color: black; /* White text */
-    padding: 10px 24px; /* Some padding */
-    cursor: pointer; /* Pointer/hand icon */
-    float: left; /* Float the buttons side by side */
-}
-
-.btn-group button:not(:last-child) {
-    border-right: none; /* Prevent double borders */
-}
-
-/* Clear floats (clearfix hack) */
-.btn-group:after {
+.row::after {
     content: "";
     clear: both;
     display: table;
 }
 
-/* Add a background color on hover */
-.btn-group button:hover {
-    background-color: lightgray;
+html {
+    font-family: "Lucida Sans", sans-serif;
 }
 
-.btn-group button:focus {
-    color: white;
+hr {
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 15em;
+    margin-right: 15em;
+    border-style: inset;
+    border-width: 1px;
+}
+
+.header {
+    background-color: #BCBBBC;
+    color: #ffffff;
+    padding: 8px;
+}
+
+.relative {
+    position: relative;
+    left: 280px;
+}
+
+#art:active {
     background-color: green;
 }
 
-#resultado {
-    position: relative;
-    top: 100px;
-    left: -765px;
-}
-
-/* Style the tab content */
-.tabcontent {
-    display: none;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-top: none;
-}
-
-
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    color: white;
+    background-color: green;
+  }
