@@ -165,70 +165,198 @@
     <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
     <h3>Reservas</h3>
     {% if reservas %}
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Fecha creacion</th>
-              <th scope="col">Nombre solicitante</th>
-              <th scope="col">Objeto</th>
-              <th scope="col">Fecha de reserva</th>
-              <th scope="col">Inicio</th>
-              <th scope="col">Termino</th>
-              <th scope="col">Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for reserva in reservas %}
+        <form id="form-reservas" method="post">
+        {% csrf_token %}
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary offset-md-9" data-toggle="modal" data-target="#exampleModal">
+          Cambiar estado reservas
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cambiar Reservas Seleccionadas</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>¿Quieres cambiar el estado de las reservas seleccionadas?</p>
+                <label for="id-reservas-estados">Estado:</label>
+                <select name="estado" id="id-reservas-estados">
+                {% for codigo, nombre in ESTADOS_RESERVA %}
+                    <option value="{{ codigo }}" {% if forloop.counter == 1 %}
+                        selected="" {% endif %}>{{ nombre }}</option>
+                {% endfor %}
+                </select>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" formaction="{% url 'Inventario:cambiarEstadoListaReservas' %}">
+                    Guardar Cambios
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+            <table class="table table-bordered">
+              <thead>
                 <tr>
-                    <td>{{ reserva.id }}</td>
-                    <td>{{ reserva.fechaCreacion }}</td>
-                    <td>{{ reserva.solicitante.nombre }}  {{ reserva.solicitante.apellido }}</td>
-                    <td>{{ reserva.articulo.nombre }}</td>
-                    <td>{{ reserva.fechaReserva }}</td>
-                    <td>{{ reserva.horaInicio }}</td>
-                    <td>{{ reserva.horaTermino }}</td>
-                    <td>{{ reserva.get_estado_display }}</td>
+                  <th scope="col"></th>
+                  <th scope="col">ID</th>
+                  <th scope="col">Fecha creacion</th>
+                  <th scope="col">Nombre solicitante</th>
+                  <th scope="col">Objeto</th>
+                  <th scope="col">Fecha de reserva</th>
+                  <th scope="col">Inicio</th>
+                  <th scope="col">Termino</th>
+                  <th scope="col">Estado</th>
                 </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {% for reserva in reservas %}
+                    <tr>
+                        <td>
+                            <div class="custom-control custom-checkbox">
+                                <input name="reservas" type="checkbox"
+                                class="custom-control-input checkbox"
+                                id="checkbox-reserva-{{ reserva.id }}"
+                                value="{{ reserva.id }}"/>
+                                <label class="custom-control-label float-left"
+                                    for="checkbox-reserva-{{ reserva.id }}"></label>
+                            </div>
+                        </td>
+                        <td>{{ reserva.id }}</td>
+                        <td>{{ reserva.fechaCreacion }}</td>
+                        <td>{{ reserva.solicitante.nombre }}  {{ reserva.solicitante.apellido }}</td>
+                        <td>{{ reserva.articulo.nombre }}</td>
+                        <td>{{ reserva.fechaReserva }}</td>
+                        <td>{{ reserva.horaInicio }}</td>
+                        <td>{{ reserva.horaTermino }}</td>
+                        <td>{{ reserva.get_estado_display }}</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </form>
     {% else %}
         <p>No se encontraron reservas.</p>
     {% endif %}
     </div>
     <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
     <h3>Préstamos</h3>
-    {% if prestamos %}
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Nombre solicitante</th>
-              <th scope="col">Objeto</th>
-              <th scope="col">Fecha de préstamo</th>
-              <th scope="col">Inicio</th>
-              <th scope="col">Término</th>
-              <th scope="col">Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for prestamo in prestamos %}
+    <ul class="nav nav-tabs" id="nav-tab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Pendientes</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Perdidos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Recibidos</a>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+          {% if prestamospendientes %}
+            <table class="table table-bordered">
+              <thead>
                 <tr>
-                    <td>{{ prestamo.id }}</td>
-                    <td>{{ prestamo.reserva.solicitante.nombre }} {{ prestamo.reserva.solicitante.apellido }}</td>
-                    <td>{{ prestamo.reserva.articulo.nombre }}</td>
-                    <td>{{ prestamo.fechaPrestamo }}</td>
-                    <td>{{ prestamo.reserva.horaInicio }}</td>
-                    <td>{{ prestamo.reserva.horaTermino }}</td>
-                    <td>{{ prestamo.get_estado_display }}</td>
+                  <th scope="col">ID</th>
+                  <th scope="col">Nombre solicitante</th>
+                  <th scope="col">Objeto</th>
+                  <th scope="col">Fecha de préstamo</th>
+                  <th scope="col">Inicio</th>
+                  <th scope="col">Término</th>
+                  <th scope="col">Estado</th>
                 </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-    {% else %}
-        <p>No se encontraron prestamos.</p>
-    {% endif %}
+              </thead>
+              <tbody>
+              {% for prestamo in prestamospendientes %}
+                    <tr>
+                        <td>{{ prestamo.id }}</td>
+                        <td>{{ prestamo.reserva.solicitante.nombre }} {{ prestamo.reserva.solicitante.apellido }}</td>
+                        <td>{{ prestamo.reserva.articulo.nombre }}</td>
+                        <td>{{ prestamo.fechaPrestamo }}</td>
+                        <td>{{ prestamo.reserva.horaInicio }}</td>
+                        <td>{{ prestamo.reserva.horaTermino }}</td>
+                        <td>{{ prestamo.get_estado_display }}</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        {% else %}
+            <p>No se encontraron prestamos pendientes.</p>
+        {% endif %}
+      </div>
+      <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+          {% if prestamosperdidos %}
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Nombre solicitante</th>
+                  <th scope="col">Objeto</th>
+                  <th scope="col">Fecha de préstamo</th>
+                  <th scope="col">Inicio</th>
+                  <th scope="col">Término</th>
+                  <th scope="col">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for prestamo in prestamosperdidos %}
+                    <tr>
+                        <td>{{ prestamo.id }}</td>
+                        <td>{{ prestamo.reserva.solicitante.nombre }} {{ prestamo.reserva.solicitante.apellido }}</td>
+                        <td>{{ prestamo.reserva.articulo.nombre }}</td>
+                        <td>{{ prestamo.fechaPrestamo }}</td>
+                        <td>{{ prestamo.reserva.horaInicio }}</td>
+                        <td>{{ prestamo.reserva.horaTermino }}</td>
+                        <td>{{ prestamo.get_estado_display }}</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        {% else %}
+            <p>No se encontraron prestamos perdidos.</p>
+        {% endif %}
+      </div>
+      <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+          {% if prestamosrecibidos %}
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Nombre solicitante</th>
+                  <th scope="col">Objeto</th>
+                  <th scope="col">Fecha de préstamo</th>
+                  <th scope="col">Inicio</th>
+                  <th scope="col">Término</th>
+                  <th scope="col">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for prestamo in prestamosrecibidos %}
+                    <tr>
+                        <td>{{ prestamo.id }}</td>
+                        <td>{{ prestamo.reserva.solicitante.nombre }} {{ prestamo.reserva.solicitante.apellido }}</td>
+                        <td>{{ prestamo.reserva.articulo.nombre }}</td>
+                        <td>{{ prestamo.fechaPrestamo }}</td>
+                        <td>{{ prestamo.reserva.horaInicio }}</td>
+                        <td>{{ prestamo.reserva.horaTermino }}</td>
+                        <td>{{ prestamo.get_estado_display }}</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        {% else %}
+            <p>No se encontraron prestamos recibidos.</p>
+        {% endif %}
+      </div>
+    </div>
     </div>
 </div>
 {% endblock %}
