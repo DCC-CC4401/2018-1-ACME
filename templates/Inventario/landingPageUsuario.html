@@ -31,29 +31,53 @@
               </div>
             </div>
           </form>
+
+          <div class="btn-group dropleft float-sm-right">
+            <button class="btn btn-link btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Búsqueda Avanzada
+            </button>
+              <div class="dropdown-menu">
+                <form class="px-4 py-3" action="{% url 'Inventario:avanzada' %}" method="GET">
+                  <div class="form-group">
+                    <label for="busquedaAvanzadaNombre/Id">ID artículo</label>
+                    <input name="q" type="number" class="form-control" id="busquedaAvanzadaNombre/Id" placeholder="ID">
+                  </div>
+                  <div class="form-check">
+                    <input type="radio" class="form-check-input" name="Estados" id="dropdownCheck1" value="S" checked>
+                    <label class="form-check-label" for="dropdownCheck1">
+                      Disponible
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input type="radio" class="form-check-input" name="Estados" id="dropdownCheck2" value="M">
+                    <label class="form-check-label" for="dropdownCheck2">
+                      En préstamo
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input type="radio" class="form-check-input" name="Estados" id="dropdownCheck3" value="A">
+                    <label class="form-check-label" for="dropdownCheck3">
+                      En reparación
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input type="radio" class="form-check-input" name="Estados" id="dropdownCheck4" value="D">
+                    <label class="form-check-label" for="dropdownCheck4">
+                      Perdido
+                    </label>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Buscar</button>
+                </form>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Búsqueda simple</a>
+              </div>
+          </div>
+
           {% for articulo in articulos %}
             <div>
-              <a class="btn btn-primary" href="{% url 'Inventario:fichaArticulo' articulo.id %}">{{ articulo.nombre }}</a>
+              <a class="btn btn-lg btn-secondary" href="{% url 'Inventario:fichaArticulo' articulo.id %}">{{ articulo.nombre }}</a>
             </div>
           {% endfor %}
-
-          <div id="accordion">
-              <div class="card">
-                <div class="card-header" id="headingOne">
-                  <h5 class="mb-0">
-                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      Búsqueda avanzada
-                    </button>
-                  </h5>
-                </div>
-
-                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                  <div class="card-body">
-                      Búsqueda avanzada
-                  </div>
-                </div>
-              </div>
-            </div>
 
         </div>
 

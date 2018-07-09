@@ -35,6 +35,15 @@ def busquedaArticulos(request):
         context['articulos'] = articulo
     return render(request, 'Inventario/landingPageUsuario.html', context)
 
+def busquedaAvanzadaArticulos(request):
+    context = {}
+    if request.GET.get('q', '') and request.GET.get('Estados', ''):
+        q = request.GET.get('q', '')
+        Estados = request.GET.get('Estados', '')
+        articulo = Articulo.objects.all().filter(id=q, estado=Estados).order_by('nombre')
+        context['articulos'] = articulo
+    return render(request, 'Inventario/landingPageUsuario.html', context)
+
 
 def landingPageUsuario(request):
     count = 0
