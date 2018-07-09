@@ -208,8 +208,8 @@ def landingPageAdministrador(request):
     prestamospendientes=prestamos.filter(estado='P')
     prestamosrecibidos=prestamos.filter(estado='C')
     lunes = (date.today() - timedelta(date.today().isoweekday() - 1) + timedelta(7 * count))
-    domingo = (date.today() + timedelta(7 - date.today().isoweekday()) + timedelta(7 * count))
-    reservagrilla = Reserva.objects.filter(fechaReserva__range=[lunes, domingo]).exclude(espacio__isnull=True)
+    viernes = (date.today() + timedelta(5 - date.today().isoweekday()) + timedelta(7 * count))
+    reservagrilla = Reserva.objects.filter(fechaReserva__range=[lunes, viernes]).exclude(espacio__isnull=True)
     reservalunes = reservagrilla.filter(fechaReserva__week_day=2)
     reservamartes = reservagrilla.filter(fechaReserva__week_day=3)
     reservamiercoles = reservagrilla.filter(fechaReserva__week_day=4)
@@ -267,26 +267,6 @@ def landingPageAdministrador(request):
     viernes8 = reservaviernes.filter(horaInicio__hour=16)
     viernes9 = reservaviernes.filter(horaInicio__hour=17)
     viernes10 = reservaviernes.filter(horaInicio__hour=18)
-    sabado1 = reservasabado.filter(horaInicio__hour=9)
-    sabado2 = reservasabado.filter(horaInicio__hour=10)
-    sabado3 = reservasabado.filter(horaInicio__hour=11)
-    sabado4 = reservasabado.filter(horaInicio__hour=12)
-    sabado5 = reservasabado.filter(horaInicio__hour=13)
-    sabado6 = reservasabado.filter(horaInicio__hour=14)
-    sabado7 = reservasabado.filter(horaInicio__hour=15)
-    sabado8 = reservasabado.filter(horaInicio__hour=16)
-    sabado9 = reservasabado.filter(horaInicio__hour=17)
-    sabado10 = reservasabado.filter(horaInicio__hour=18)
-    domingo1 = reservadomingo.filter(horaInicio__hour=9)
-    domingo2 = reservadomingo.filter(horaInicio__hour=10)
-    domingo3 = reservadomingo.filter(horaInicio__hour=11)
-    domingo4 = reservadomingo.filter(horaInicio__hour=12)
-    domingo5 = reservadomingo.filter(horaInicio__hour=13)
-    domingo6 = reservadomingo.filter(horaInicio__hour=14)
-    domingo7 = reservadomingo.filter(horaInicio__hour=15)
-    domingo8 = reservadomingo.filter(horaInicio__hour=16)
-    domingo9 = reservadomingo.filter(horaInicio__hour=17)
-    domingo10 = reservadomingo.filter(horaInicio__hour=18)
     context = {
         'ESTADOS_RESERVA': ESTADOS_RESERVA,
         'count': count,
@@ -296,7 +276,7 @@ def landingPageAdministrador(request):
         'prestamosperdidos': prestamosperdidos,
         'prestamosrecibidos': prestamosrecibidos,
         'lunes': lunes,
-        'domingo': domingo,
+        'viernes': viernes,
         'reservagrilla': reservagrilla,
         'lunes1': lunes1.first(),
         'lunes2': lunes2.first(),
@@ -307,7 +287,6 @@ def landingPageAdministrador(request):
         'lunes7': lunes7.first(),
         'lunes8': lunes8.first(),
         'lunes9': lunes9.first(),
-        'lunes10': lunes10.first(),
         'martes1': martes1.first(),
         'martes2': martes2.first(),
         'martes3': martes3.first(),
@@ -317,7 +296,6 @@ def landingPageAdministrador(request):
         'martes7': martes7.first(),
         'martes8': martes8.first(),
         'martes9': martes9.first(),
-        'martes10': martes10.first(),
         'miercoles1': miercoles1.first(),
         'miercoles2': miercoles2.first(),
         'miercoles3': miercoles3.first(),
@@ -327,7 +305,6 @@ def landingPageAdministrador(request):
         'miercoles7': miercoles7.first(),
         'miercoles8': miercoles8.first(),
         'miercoles9': miercoles9.first(),
-        'miercoles10': miercoles10.first(),
         'jueves1': jueves1.first(),
         'jueves2': jueves2.first(),
         'jueves3': jueves3.first(),
@@ -337,7 +314,6 @@ def landingPageAdministrador(request):
         'jueves7': jueves7.first(),
         'jueves8': jueves8.first(),
         'jueves9': jueves9.first(),
-        'jueves10': jueves10.first(),
         'viernes1': viernes1.first(),
         'viernes2': viernes2.first(),
         'viernes3': viernes3.first(),
@@ -347,27 +323,6 @@ def landingPageAdministrador(request):
         'viernes7': viernes7.first(),
         'viernes8': viernes8.first(),
         'viernes9': viernes9.first(),
-        'viernes10': viernes10.first(),
-        'sabado1': sabado1.first(),
-        'sabado2': sabado2.first(),
-        'sabado3': sabado3.first(),
-        'sabado4': sabado4.first(),
-        'sabado5': sabado5.first(),
-        'sabado6': sabado6.first(),
-        'sabado7': sabado7.first(),
-        'sabado8': sabado8.first(),
-        'sabado9': sabado9.first(),
-        'sabado10': sabado10.first(),
-        'domingo1': domingo1.first(),
-        'domingo2': domingo2.first(),
-        'domingo3': domingo3.first(),
-        'domingo4': domingo4.first(),
-        'domingo5': domingo5.first(),
-        'domingo6': domingo6.first(),
-        'domingo7': domingo7.first(),
-        'domingo8': domingo8.first(),
-        'domingo9': domingo9.first(),
-        'domingo10': domingo10.first()
     }
     return render(request, 'Inventario/landingPageAdministrador.html', context)
 
