@@ -26,8 +26,7 @@
     </ul>
 <div class="tab-content" id="pills-tabContent">
 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-{#    {% if reservagrilla %}#}
-        <table class="table table-bordered table-sm">
+<table class="table table-bordered table-sm">
   <thead>
     <tr>
         <th><form method="get" action="{% url 'Inventario:lpAdmin' %}">
@@ -36,7 +35,7 @@
             </center>
         </form></th>
 
-        <th colspan="6" scope="col"><center>Semana del lunes: {{ lunes }} - domingo: {{ domingo }}</center></th>
+        <th colspan="4" scope="col"><center>Semana del lunes: {{ lunes }} - viernes: {{ viernes }}</center></th>
 
         <th><form method="get" action="{% url 'Inventario:lpAdmin' %}">
             <center>
@@ -51,8 +50,6 @@
       <th scope="col">Miércoles</th>
       <th scope="col">Jueves</th>
       <th scope="col">Viernes</th>
-      <th scope="col">Sábado</th>
-      <th scope="col">Domingo</th>
     </tr>
   </thead>
   <tbody>
@@ -63,8 +60,6 @@
       <td>{{ miercoles1.espacio.nombre }}</td>
       <td>{{ jueves1.espacio.nombre }}</td>
       <td>{{ viernes1.espacio.nombre }}</td>
-      <td>{{ sabado1.espacio.nombre }}</td>
-      <td>{{ domingo1.espacio.nombre }}</td>
     </tr>
     <tr>
       <th scope="row">10:00 - 11:00</th>
@@ -73,8 +68,6 @@
       <td>{{ miercoles2.espacio.nombre }}</td>
       <td>{{ jueves2.espacio.nombre }}</td>
       <td>{{ viernes2.espacio.nombre }}</td>
-      <td>{{ sabado2.espacio.nombre }}</td>
-      <td>{{ domingo2.espacio.nombre }}</td>
     </tr>
     <tr>
       <th scope="row">11:00 - 12:00</th>
@@ -83,8 +76,6 @@
       <td>{{ miercoles3.espacio.nombre }}</td>
       <td>{{ jueves3.espacio.nombre }}</td>
       <td>{{ viernes3.espacio.nombre }}</td>
-      <td>{{ sabado3.espacio.nombre }}</td>
-      <td>{{ domingo3.espacio.nombre }}</td>
     </tr>
     <tr>
       <th scope="row">12:00 - 13:00</th>
@@ -93,8 +84,6 @@
       <td>{{ miercoles4.espacio.nombre }}</td>
       <td>{{ jueves4.espacio.nombre }}</td>
       <td>{{ viernes4.espacio.nombre }}</td>
-      <td>{{ sabado4.espacio.nombre }}</td>
-      <td>{{ domingo4.espacio.nombre }}</td>
     </tr>
     <tr>
       <th scope="row">13:00 - 14:00</th>
@@ -103,8 +92,6 @@
       <td>{{ miercoles5.espacio.nombre }}</td>
       <td>{{ jueves5.espacio.nombre }}</td>
       <td>{{ viernes5.espacio.nombre }}</td>
-      <td>{{ sabado5.espacio.nombre }}</td>
-      <td>{{ domingo5.espacio.nombre }}</td>
     </tr>
     <tr>
       <th scope="row">14:00 - 15:00</th>
@@ -113,8 +100,6 @@
       <td>{{ miercoles6.espacio.nombre }}</td>
       <td>{{ jueves6.espacio.nombre }}</td>
       <td>{{ viernes6.espacio.nombre }}</td>
-      <td>{{ sabado6.espacio.nombre }}</td>
-      <td>{{ domingo6.espacio.nombre }}</td>
     </tr>
     <tr>
       <th scope="row">15:00 - 16:00</th>
@@ -123,8 +108,6 @@
       <td>{{ miercoles7.espacio.nombre }}</td>
       <td>{{ jueves7.espacio.nombre }}</td>
       <td>{{ viernes7.espacio.nombre }}</td>
-      <td>{{ sabado7.espacio.nombre }}</td>
-      <td>{{ domingo7.espacio.nombre }}</td>
     </tr>
     <tr>
       <th scope="row">16:00 - 17:00</th>
@@ -133,8 +116,6 @@
       <td>{{ miercoles8.espacio.nombre }}</td>
       <td>{{ jueves8.espacio.nombre }}</td>
       <td>{{ viernes8.espacio.nombre }}</td>
-      <td>{{ sabado8.espacio.nombre }}</td>
-      <td>{{ domingo8.espacio.nombre }}</td>
     </tr>
     <tr>
       <th scope="row">17:00 - 18:00</th>
@@ -143,24 +124,9 @@
       <td>{{ miercoles9.espacio.nombre }}</td>
       <td>{{ jueves9.espacio.nombre }}</td>
       <td>{{ viernes9.espacio.nombre }}</td>
-      <td>{{ sabado9.espacio.nombre }}</td>
-      <td>{{ domingo9.espacio.nombre }}</td>
-    </tr>
-    <tr>
-      <th scope="row">18:00 - 19:00</th>
-      <td>{{ lunes10.espacio.nombre }}</td>
-      <td>{{ martes10.espacio.nombre }}</td>
-      <td>{{ miercoles10.espacio.nombre }}</td>
-      <td>{{ jueves10.espacio.nombre }}</td>
-      <td>{{ viernes10.espacio.nombre }}</td>
-      <td>{{ sabado10.espacio.nombre }}</td>
-      <td>{{ domingo10.espacio.nombre }}</td>
     </tr>
   </tbody>
 </table>
-{#    {% else %}#}
-{#    <p>No hay reservas de espacio en la semana del lunes: {{ lunes }} - domingo: {{ domingo }}</p>#}
-{#    {% endif %}#}
 </div>
     <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
     <h3>Reservas</h3>

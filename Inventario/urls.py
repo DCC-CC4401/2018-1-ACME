@@ -36,7 +36,9 @@ urlpatterns = [
     path('lpadmin/', views.landingPageAdministrador, name='lpAdmin'),
     path('lpusuario/', views.landingPageUsuario, name='lpUsuario'),
     path('buscar/', views.busquedaArticulos, name='buscar'),
+    path('avanzada/', views.busquedaAvanzadaArticulos, name='avanzada'),
     path('buscar/articulo/<int:articuloId>/', views.fichaArticulo, name='articuloEncontrado'),
+    path('avanzada/articulo/<int:articuloId>/', views.fichaArticulo, name='articuloEncontradoA'),
 
     path('reserva/eliminar-lista/', views.eliminarListaReservas, name='eliminarListaReservas'),
     path('prestamo/eliminar-lista/', views.eliminarListaPrestamos, name='eliminarListaPrestamos'),
