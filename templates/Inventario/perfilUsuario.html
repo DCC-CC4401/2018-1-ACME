@@ -10,14 +10,16 @@
 {% endblock %}
 
 {% block content %}
-    <div style="padding-left:50px; padding-right:50px;" class="mb-5">
+    <div style="padding-left:50px; padding-right:50px; margin-bottom: 100px">
         <div class="row justify-content-center align-items-center mb-3">
             <div class="col-6">
-                <a href="{% url 'Inventario:index' %}" class="btn btn-info btn-lg btn-block" role="button">Reserva Tu
+                <a href="{% url 'Inventario:index' %}#buscarArticulos" class="btn btn-info btn-lg btn-block"
+                   role="button">Reserva Tu
                     Espacio</a>
             </div>
             <div class="col-6">
-                <a href="{% url 'Inventario:index' %}" class="btn btn-info btn-lg btn-block" role="button">Pide Tu
+                <a href="{% url 'Inventario:index' %}#buscarEspacios" class="btn btn-info btn-lg btn-block"
+                   role="button">Pide Tu
                     Artículo</a>
             </div>
         </div>
@@ -319,7 +321,11 @@
                                                     </div>
                                                 {% endif %}
                                             </div>
-                                            <div class="col-5">{{ registro.prestamo.reserva.articulo.nombre }}</div>
+                                            {% if registro.prestamo.reserva.articulo %}
+                                                <div class="col-5">{{ registro.prestamo.reserva.articulo.nombre }}</div>
+                                            {% elif registro.prestamo.reserva.espacio %}
+                                                <div class="col-5">{{ registro.prestamo.reserva.espacio.nombre }}</div>
+                                            {% endif %}
                                             <div class="col-2">[{{ registro.prestamo.get_code }}]</div>
                                             <div class="col-2">
                                                 <div class="float-right">
